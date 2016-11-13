@@ -25,6 +25,9 @@ Modules/Features:-
 --> Shop by Price Slider <br/>
 --> Shop by Manufacturer <br/>
 --> Recomended Products <br/>
+--> eBay, Amazon, Rakuten <br/>
+--> Payment Gateway (Paypal, Authorize.net etc) <br/>
+--> Promotions <br/>
 --> Popular Tags <br/>
 --> Cloud Zoom Products <br/>
 --> Products Image Slider <br/>
