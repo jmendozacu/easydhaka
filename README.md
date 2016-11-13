@@ -39,4 +39,5 @@ Modules/Features:-
 --> On Sale Feature <br/>
 --> Product Reviews <br/>
 --> Notification Manager <br/>
---> Estimated Delivery Date
+--> Estimated Delivery Date <br/>
+--> Inline Editing <br/>
