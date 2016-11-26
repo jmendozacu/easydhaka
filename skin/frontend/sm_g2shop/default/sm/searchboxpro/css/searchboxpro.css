@@ -1,0 +1,218 @@
+.serachbox-pro-pretext, 
+.serachbox-pro-posttext{
+	margin: 10px 0;
+	width: 100%;
+}
+.serachbox-pro-posttext{
+	/*margin:20px 0;*/
+}
+.sm-serachbox-pro{
+	float:right;
+	position: relative;
+}
+.sm-serachbox-pro .sm-searchbox-popular{
+	float: left;
+	margin-bottom: 10px;
+}
+
+.sm-serachbox-pro .sm-searchbox-keyword {
+    float: left;
+}
+.sm-serachbox-pro .sm-searchbox-advanced{
+	float: left;
+	margin-top:3px;
+}
+.sm-serachbox-pro .sm-searchbox-advanced a{
+	text-decoration: none;
+	color: #4A629F;
+	font-size: 12px;
+}
+.sm-serachbox-pro .sm-searchbox-advanced a:hover{
+	text-decoration: underline;
+}
+.sm-serachbox-pro .sm-searchbox-popular .sm-searchbox-popular-title{
+	display: inline-block;
+	float: left;
+	font-size: 16px;
+	color: #4a629f;
+	font-weight: bold;
+	margin-right: 15px;
+}
+.sm-serachbox-pro .sm-searchbox-keyword-list {
+    float: left;
+}
+.sm-serachbox-pro .sm-searchbox-keyword-list > li{
+	float: left;
+	line-height: 210%;
+}
+.sm-serachbox-pro .sm-searchbox-keyword-list > li a {
+    float: left;
+	margin-right: 10px;
+	color:#686868;
+	font-size:14px;
+	text-decoration: none;
+}
+.sm-serachbox-pro .sm-searchbox-keyword-list > li a:hover {
+	text-decoration: underline;
+}
+
+.sm-serachbox-pro .sm-searchbox-keyword-list > li a.sm-searchbox-more {
+    float: left;
+	margin-right: 10px;
+	color:#4A629F;
+	font-size:12px;
+	text-decoration: none;
+}
+.sm-serachbox-pro .sm-searchbox-keyword-list > li a.sm-searchbox-more:hover {
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.sm-serachbox-pro .sm-searbox-content {
+    border: medium none;
+    border-radius: 0;
+    box-shadow: none;
+    position: relative;
+    width: 100%;
+}
+.sm-serachbox-pro .sm-searbox-content .form-search{
+	text-align: left;
+	border: none;
+	position: static;
+	margin-top: 0;
+	margin-bottom: 0;
+	display:inline-block;
+	border:1px solid #e1e1e1;
+}
+.sm-serachbox-pro .sm-searbox-content .form-search .search-cat {
+	background:#f7f7f7;
+	border-right:1px solid #e1e1e1;
+	position:relative;
+	height:41px;
+	line-height:41px;
+	width:208px;
+}
+.sm-serachbox-pro .sm-searbox-content .form-search > input{
+	padding: 0 10px;
+	height: 45px;
+	float: left;
+	border: 1px solid #C1CCD1 !important;
+	border-radius:5px 0 0 5px;
+	border-right: 0 !important;	
+	color: #c8c8c8;
+	width:50%;
+	font-size: 12px;
+	line-height: 45px;
+}
+.sm-serachbox-pro .sm-searbox-content .form-search > select{
+	padding: 14px 10px 10px 15px;
+	border-radius:0 5px 5px 0;
+	color: #909090;	
+	width:30%;
+	height: 47px;
+	line-height: 0;
+}
+.sm-serachbox-pro .sm-searbox-content .form-button.button{
+	width:43px;
+	height:43px!important;
+	background-image:url(../images/btn-search-pro.png);
+	background-repeat:no-repeat;
+	background-position:center center;
+	overflow:hidden;
+	text-indent:-9999px;
+	position:absolute;
+	top:-1px;
+	right:-1px;
+}
+.sm-serachbox-pro .sm-searbox-content #uniform-cat > span {
+    display: block;
+    margin-right: 30px;
+    padding: 0 0 0 10px;
+    width: auto !important;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.sm-serachbox-pro .sm-searbox-content #uniform-cat > span:before{
+	content:"";
+	width:9px;
+	height:6px;
+	display:inline-block;
+	position:absolute;
+	content: "\f0d7";
+	font-family:'FontAwesome';
+	font-size: 14px;
+	right:15px;
+	top:0;
+	color: #999;
+}
+.sm-serachbox-pro .sm-searbox-content  .selector {
+    width: 100%!important;
+}
+.sm-serachbox-pro .sm-searbox-content .form-button.button:hover{
+	
+}
+.sm-serachbox-pro .sm-searbox-content .form-button.button span {
+	background: none repeat scroll 0 0 transparent;
+    border: medium none;
+    color: #FFFFFF;
+    display: block;
+    font-family: Arial;
+    font-size: 16px;
+    font-variant: normal;
+    font-weight: bold;
+    letter-spacing: 0;
+    text-align: center;
+    white-space: nowrap;
+	text-transform: none;
+}
+
+.sm-serachbox-pro select option {
+    padding: 5px 10px;
+}
+.sm-serachbox-pro input.input-text, .sm-serachbox-pro select, .sm-serachbox-pro textarea {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 1px solid #C1CCD1;
+	font-size: 13px;
+	margin: 0;
+	padding: 0;
+}
+.sm-serachbox-pro input.input-text{
+	width:460px;
+	height:40px;
+	padding:0px 50px 0px 15px;
+	border:none;
+	background:none;
+}
+.sm-serachbox-pro select{
+	position:absolute;
+	width:100%;
+	height:100%;
+	opacity:0;
+	left:0px;
+	top:0px;
+	cursor: pointer;
+}
+.sm-serachbox-pro .search-cat{
+	float:left;
+}
+.sm-serachbox-pro .input-search-pro{
+	float:left;
+	position:relative;
+}
+
+@media all and (max-width: 640px){
+	.sm-serachbox-pro .sm-searbox-content .form-search > input {
+		width: 63%;
+		border-radius: 5px;
+		border: 1px solid #C1CCD1 !important;
+		height: 38px;
+	}
+	.sm-serachbox-pro .sm-searbox-content .form-search > select {
+		display: none;
+	}
+	.sm-serachbox-pro .sm-searbox-content .form-button.button {
+		width: 27%;
+		height: 40px;
+	}
+	
+}

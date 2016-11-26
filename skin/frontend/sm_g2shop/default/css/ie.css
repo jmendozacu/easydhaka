@@ -1,0 +1,12 @@
+
+/*--------------------- zen -----------------------*/
+#yt_wrapper #yt_header ul.links li{
+	padding: 0 0px 7px 0px;
+}
+.sm_zen .radio,.sm_zen .checkbox {
+	padding-left:0px;
+}
+.data-table.cart-table input.input-text{
+	padding-bottom:6px;
+}
+dl#checkout-payment-method-load dt:nth-child(2) input{ margin-left:-25px;}

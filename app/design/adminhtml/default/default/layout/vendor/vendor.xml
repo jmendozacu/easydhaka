@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<layout>
+	<adminhtml_sales_order_view>
+		<reference name="head">
+			<action ifconfig="vendor/settings/enabled" method="addItem"><type>js_css</type><name>htz/vendor.css</name></action>
+        </reference>
+		<reference name="order_info">
+			<action ifconfig="vendor/settings/enabled" method="setTemplate"><template>vendor/sales/order/view/info.phtml"></template></action>
+		</reference>
+		<reference name="order_items">
+			<action ifconfig="vendor/settings/enabled"  method="addItemRender"><type>default</type><block>adminhtml/sales_order_view_items_renderer_default</block><template>vendor/sales/order/view/items/renderer/default.phtml</template></action>
+			<action ifconfig="vendor/settings/enabled" method="addItemRender"><type>bundle</type><block>bundle/adminhtml_sales_order_view_items_renderer</block><template>vendor/bundle/sales/order/view/items/renderer.phtml</template></action>
+			<action ifconfig="vendor/settings/enabled" method="addItemRender"><type>downloadable</type><block>adminhtml/sales_order_view_items_renderer_default</block><template>vendor/downloadable/sales/order/view/items/renderer/downloadable.phtml</template></action>
+			<block type="core/text_list" name="order_item_extra_info" />
+		</reference>
+	</adminhtml_sales_order_view>	
+</layout>

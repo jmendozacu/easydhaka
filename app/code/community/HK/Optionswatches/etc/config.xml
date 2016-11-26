@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<config>
+  <modules>
+    <HK_Optionswatches>
+      <version>0.1.0</version>
+    </HK_Optionswatches>
+  </modules>
+  
+  <adminhtml>
+		<acl>
+			<resources>
+				<admin>
+					<children>
+						<system>
+							<children>
+								<config>
+									<children>
+										<optionswatches>
+											<title>Image Configure</title>
+										</optionswatches>
+									</children>
+								</config>
+							</children>
+						</system>
+					</children>
+				</admin>
+			</resources>
+		</acl>
+	</adminhtml>
+	
+	<admin>
+        <routers>
+			<optionswatches>
+				<use>admin</use>
+				<args>
+					<module>HK_Optionswatches</module>
+					<frontName>optionswatches</frontName>
+				</args>
+			</optionswatches>
+        </routers>
+    </admin>
+	
+  <frontend>
+    <routers>
+      <optionswatches>
+        <use>standard</use>
+          <args>
+            <module>HK_Optionswatches</module>
+            <frontName>optionswatches</frontName>
+          </args>
+      </optionswatches>
+    </routers>
+		<layout>
+		  <updates>
+			<optionswatches>
+			  <file>optionswatches.xml</file>
+			</optionswatches>
+		  </updates>
+		</layout>
+  </frontend>
+	
+  <global>
+    <helpers>
+      <optionswatches>
+        <class>HK_Optionswatches_Helper</class>
+      </optionswatches>
+    </helpers>
+	<blocks>
+	  <optionswatches>
+		<class>HK_Optionswatches_Block</class>
+	  </optionswatches>
+	</blocks>
+  </global>
+</config> 

@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+	<config>
+		<acl>
+			<resources>
+				<admin>
+					<children>
+						<system>
+							<children>
+								<config>
+									<children>
+										<g2shop_cfg translate="title" module="g2shop">
+											<title>SM g2shop Section</title>
+											<sort_order>150</sort_order>
+										</g2shop_cfg>
+									</children>
+								</config>
+							</children>
+						</system>						
+					</children>
+				</admin>
+			</resources>
+		</acl>
+		<menu>
+			<g2shop translate="title" module="g2shop">
+				<title>SM Theme</title>
+				<sort_order>100</sort_order>
+				<depends>
+					<module>Sm_G2shop</module>
+				</depends>
+				<children>
+					<g2shop translate="title" module="g2shop">
+						<title>Theme G2shop</title>
+						<action>adminhtml/system_config/edit/section/g2shop_cfg</action>
+						<sort_order>0</sort_order>
+					</g2shop>										
+					<basicproducts translate="title" module="g2shop">
+						<title>SM Basic Products</title>
+						<action>adminhtml/system_config/edit/section/basicproducts_cfg</action>
+						<sort_order>1</sort_order>
+					</basicproducts>
+										
+					<cartpro translate="title" module="g2shop">
+						<title>SM Cart Pro</title>
+						<action>adminhtml/system_config/edit/section/cartpro_cfg</action>
+						<sort_order>2</sort_order>
+					</cartpro>					
+					<dynamicslideshow translate="title" module="g2shop">
+						<title>SM Dynamic Slideshow</title>
+						<action>adminhtml/system_config/edit/section/dynamicslideshow_cfg</action>
+						<sort_order>3</sort_order>
+					</dynamicslideshow>					
+
+					<megamenu translate="title">
+						<title>SM Mega Menu</title>
+						<children>
+							<menugroup translate="title" module="g2shop">
+								<title>Menu Manager</title>
+								<action>megamenu/adminhtml_menugroup/</action>
+								<sort_order>1</sort_order>
+							</menugroup>	
+							<menuitems translate="title" module="g2shop">
+								<title>Menu Items Manager</title>
+								<action>megamenu/adminhtml_menuitems/</action>
+								<sort_order>2</sort_order>
+							</menuitems>
+							<configurtion translate="title" module="g2shop">
+								<title>Configuration</title>
+								<action>adminhtml/system_config/edit/section/megamenu_cfg</action>
+								<sort_order>3</sort_order>
+							</configurtion>
+						</children>
+					</megamenu>
+					
+					<deal translate="title" module="g2shop">
+						<title>SM Deals</title>
+						<sort_order>4</sort_order>
+						<children>
+							<deal translate="title" module="g2shop">
+								<title>Manage Deals</title>
+								<action>adminhtml/deal_deal</action>
+								<sort_order>0</sort_order>
+							</deal>
+							<Configuration translate="title" module="g2shop">
+								<title>Configuration</title>
+								<action>adminhtml/system_config/edit/section/deal</action>
+								<sort_order>1</sort_order>
+							</Configuration>
+						</children>
+					</deal>
+					
+					<supercategories translate="title" module="g2shop">
+						<title>SM Supercategories</title>
+						<action>adminhtml/system_config/edit/section/supercategories_cfg</action>
+						<sort_order>5</sort_order>
+					</supercategories>
+					
+					<searchboxpro translate="title" module="g2shop">
+						<title>SM Search Box Pro</title>
+						<action>adminhtml/system_config/edit/section/searchboxpro</action>
+						<sort_order>6</sort_order>
+					</searchboxpro>
+						
+					<quickview translate="title" module="g2shop">
+						<title>SM Quickview</title>
+						<action>adminhtml/system_config/edit/section/quickview</action>
+						<sort_order>7</sort_order>
+					</quickview>
+					
+					<sm_shopby translate="title" module="g2shop">
+						<title>SM Shopby</title>
+						<action>adminhtml/system_config/edit/section/sm_shopby</action>
+						<sort_order>8</sort_order>
+					</sm_shopby>	
+					
+					<imageslider translate="title" module="g2shop">
+						<title>SM Image Slider</title>
+						<action>adminhtml/system_config/edit/section/imageslider_cfg</action>
+						<sort_order>9</sort_order>
+					</imageslider>
+				
+				</children>
+			</g2shop>
+		</menu>		
+	</config>

@@ -1,0 +1,112 @@
+<label style="float: left; /*font-size: 14px; color: orange;*/"><?php echo $this->__('Or upload your photo') ?> &nbsp;</label>
+<script type="text/javascript" src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS,true) ?>lib/flex.js"></script>
+<script type="text/javascript" src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS,true) ?>mage/adminhtml/flexuploader.js"></script>
+<script type="text/javascript" src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS,true) ?>lib/FABridge.js"></script>
+
+<div id="<?php echo $this->getHtmlId() ?>" class="uploader">
+    <div style="display: block; margin-left: 10px">
+        <p class="note" style="margin: 0;padding: 0 0 0 13px;font-size: 11px;"><span>&nbsp;&nbsp;<?php echo $this->__('Recommended size: ')?><span id="giftcard-notes-top" style="display: none">600x190</span><span id="giftcard-notes-center" style="display: none">600x365</span><span id="giftcard-notes-left" style="display: none">250x365</span>. <?php echo $this->__('&nbsp;&nbsp;Support gif, jpg, png files.
+') ?></span></p>
+    </div>
+    <div class="buttons" style="display:none">
+        <button id="<?php echo $this->_getButtonId('upload') ?>" type="button" title="<?php echo $this->__('Upload') ?>" class="button btn-cart" onclick="<?php echo $this->getJsObjectName() ?>.upload()" style="margin-bottom: 10px;background:#ffac47 url(<?php echo $this->getSkinUrl('images/giftvoucher/btn_bg.gif') ?>) repeat-x 0 100%;"><span style="background: none"><span style="background: none">Upload</span></span></button>
+        <div id="<?php echo $this->getHtmlId() ?>-install-flash" style="display:none">
+            <?php echo Mage::helper('media')->__('This content requires last version of Adobe Flash Player. <a href="%s">Get Flash</a>', 'http://www.adobe.com/go/getflash/') ?>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="no-display" id="<?php echo $this->getHtmlId() ?>-template">
+        <div id="{{id}}" class="file-row" style="font-size: 12px">
+            <span class="file-info">{{name}} ({{size}})</span>
+            <span class="delete-button"><?php echo $this->getDeleteButtonHtml() ?></span>
+            <span class="progress-text" style="display: block"></span>
+            <div class="clear"></div>
+        </div>
+    </div>
+    <div class="no-display" id="<?php echo $this->getHtmlId() ?>-template-progress">
+        {{percent}}% {{uploaded}} / {{total}}
+    </div>
+</div>
+<div id="div-image-for-custom" style="position:relative; float: left;border: 2px solid white;display: none; clear: both; margin-bottom: 5px; margin-left: 15px">
+    <img id="image-for-custom" src="" width="68" height="56" alt="image giftcard" style="cursor: pointer;border: 1px solid white;" onclick="changeImageDesignAgain(this)">
+    <div class="egcSwatch-arrow" style="display: none"></div>
+</div>
+<input type="hidden" name="giftcard_use_custom_image" id='giftcard-use-custom-image' value="0" />
+       
+ <script type="text/javascript">
+//<![CDATA[       
+    maxUploadFileSizeInBytes = '<?php echo $this->getDataMaxSizeInBytes() ?>';//512000;
+    maxUploadFileSize = '<?php echo $this->getDataMaxSize() ?>'+'B';
+    image_upload_name = '';
+
+    <?php echo $this->getJsObjectName() ?> = new Flex.Uploader('<?php echo $this->getHtmlId() ?>', '<?php echo $this->getSkinUrl('images/giftvoucher/uploaderSingle.swf') ?>', <?php echo $this->getConfigJson() ?>);
+    <?php echo $this->getJsObjectName() ?>.onFilesComplete = function(completedFiles){
+        completedFiles.each(function(file){
+            urlUploadImage = file.response.evalJSON().url;
+            image_upload_name = file.response.evalJSON().file;
+            $('image-for-custom').src = urlUploadImage;
+            $('div-image-for-custom').show();
+            changeImageDesign();
+            <?php echo $this->getJsObjectName() ?>.removeFile(file.id);
+        });
+        $(<?php echo $this->_getButtonId('upload') ?>).hide();
+        MediabrowserInstance.handleUploadComplete();
+    }
+   <?php echo $this->getJsObjectName() ?>.onFileSelect = function(){
+        file = <?php echo $this->getJsObjectName() ?>.uploader.getFilesInfo()[0];
+        filename = file.name;
+        filetype = filename.substr(filename.length -4);
+        if(filetype === '.png' || filetype === '.gif' || filetype === '.jpg'){
+             $('div-image-for-custom').hide();
+             <?php echo $this->getJsObjectName() ?>.upload();      
+         }else{
+             <?php echo $this->getJsObjectName() ?>.removeFile(file.id);
+            alert("<?php echo $this->__('Disalow filetype!') ?>");
+         }
+    }
+
+    // hide flash buttons
+    if ($('<?php echo $this->getHtmlId() ?>-flash') != undefined) {
+        $('<?php echo $this->getHtmlId() ?>-flash').setStyle({float:'left'});
+    }
+
+    function changeImageDesignAgain(el){
+        urlUploadImage = el.src;
+        changeImageDesign();
+    }
+    
+    function changeImageDesign(){
+        if(urlUploadImage == '') url = ''; 
+        else{
+            url = 'url('+urlUploadImage+')';
+            if(typeof image_old != 'undefined'){
+                $('div-'+image_old).removeClassName('gift-active');
+                $('div-'+image_old).down('.egcSwatch-arrow').hide();
+            }
+        }
+		
+		if($('giftcard-template-back')) $('giftcard-template-back').down('.giftcard-change-image').style.backgroundImage = url;
+		if($('giftcard-template-left')) $('giftcard-template-left').down('.giftcard-change-image').style.backgroundImage = url;
+		if($('giftcard-template-top')) $('giftcard-template-top').down('.giftcard-change-image').style.backgroundImage = url;
+        
+        $('div-image-for-custom').addClassName('gift-active');
+        $('div-image-for-custom').show();
+        $('div-image-for-custom').down('.egcSwatch-arrow').show();
+        
+        images_tmp = templates[template_id].images;
+        images_tmp = images_tmp.split(',');
+        $('giftcard-template-images').value = image_upload_name;
+        $('giftcard-use-custom-image').value = '1';
+    }
+//]]>
+</script>
+<script type="text/javascript">
+    <?php if(Mage::getSingleton('customer/session')->getGiftcardCustomUploadImage() && file_exists(Mage::getBaseDir() . str_replace("/", DS, strstr(Mage::getSingleton('customer/session')->getGiftcardCustomUploadImage(), '/media')))): ?>
+        urlUploadImage = '<?php echo Mage::getSingleton('customer/session')->getGiftcardCustomUploadImage() ?>';
+        image_upload_name = '<?php echo Mage::getSingleton('customer/session')->getGiftcardCustomUploadImageName() ?>';
+        $('image-for-custom').src = urlUploadImage;
+        $('div-image-for-custom').show();
+        urlUploadImage = '';
+        //changeImageDesign();
+    <?php endif; ?>
+</script> 

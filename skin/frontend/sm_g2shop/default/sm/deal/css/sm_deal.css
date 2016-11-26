@@ -1,0 +1,12 @@
+.sm-deal-wrap{
+	width: 100%;
+}
+
+.sm-deal-wrap .deal-list-item{
+	float: left;
+	width: 100%;
+}
+.sm-deal-wrap .item-deal{
+	box-sizing: border-box;
+}
+

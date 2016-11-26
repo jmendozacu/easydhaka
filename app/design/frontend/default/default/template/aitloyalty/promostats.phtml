@@ -1,0 +1,61 @@
+<?php
+/**
+ * Loyalty Program
+ *
+ * @category:    Aitoc
+ * @package:     Aitoc_Aitloyalty
+ * @version      2.3.20
+ * @license:     SgbtEEmO4TN5qVIe4RyMXvFvrV2LxMVBSCZx9T3Gjw
+ * @copyright:   Copyright (c) 2015 AITOC, Inc. (http://www.aitoc.com)
+ */
+/**
+* @copyright  Copyright (c) 2009 AITOC, Inc. 
+*/
+?>
+
+<div class="page-head">
+    <h3><?php echo $this->helper('sales')->__('Available Specials') ?></h3>
+</div>
+
+<?php $iCount = 0;?>
+
+<?php if($aLoyaltyRules = $this->getLoyaltyRules()): ?>
+    <?php foreach ($aLoyaltyRules as $_rule):  ?>
+        <?php $iCount++;?>
+    
+        <?php echo $_rule->getValue();?>
+        <br>
+        <?php if ($this->getCouponCodes($_rule) AND $_rule->getCouponeEnable()): ?>
+            <?php echo $this->helper('sales')->__('Coupon Code') ?>:
+            <?php echo $this->getCouponCodes($_rule); ?>
+            <br>
+            
+        <?php endif; ?>
+        
+        <?php if ($_rule->getIsSurcharge()): ?>
+            <span class="nobr"><?php echo $this->helper('sales')->__('Surcharge Amount') ?></span>:
+        <?php else: ?>
+            <span class="nobr"><?php echo $this->helper('sales')->__('Discount Amount') ?></span>:
+        <?php endif; ?>
+        
+        
+        <?php if (strpos($_rule->getSimpleAction(), 'percent')): ?>
+            <?php echo $_rule->getDiscountAmount(); ?>%
+        <?php else: ?>
+            <?php echo $this->helper('checkout')->formatPrice($_rule->getDiscountAmount()); ?>
+        <?php endif; ?>
+        
+        <?php if ($_rule->getIsLoyaltyValid()): ?>
+            <span class="nobr">(<?php echo $this->helper('sales')->__('available') ?>)</span>
+        <?php endif; ?>
+        <br>
+        
+            <div style="border-bottom:1px solid #ccc;"></div>        
+        
+        <br>
+    <?php endforeach; ?>
+<?php endif; ?>
+
+<?php if (!$iCount): ?>
+    <?php echo $this->helper('sales')->__('No specials currently available') ?>
+<?php endif; ?>

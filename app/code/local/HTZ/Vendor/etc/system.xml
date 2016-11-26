@@ -1,0 +1,98 @@
+<?xml version="1.0" ?>
+<config>
+    <tabs>
+        <vendor translate="label" module="vendor">
+            <label>Vendor</label>
+            <sort_order>1</sort_order>
+        </vendor>
+    </tabs>
+    <sections>
+        <vendor translate="label" module="vendor">
+			<label>Manage Settings</label>
+			<tab>vendor</tab>
+			<sort_order>1</sort_order>
+			<show_in_default>1</show_in_default>
+			<show_in_website>1</show_in_website>
+			<show_in_store>1</show_in_store>
+			<groups>
+				<settings translate="label">
+				<label>Settings</label>
+				<frontend_type>text</frontend_type>
+				<sort_order>1</sort_order>
+				<show_in_default>1</show_in_default>
+				<show_in_website>1</show_in_website>
+				<show_in_store>1</show_in_store>
+					<fields>
+							<enabled translate="label">
+								<label>Enabled</label>
+								<frontend_type>select</frontend_type>
+								<source_model>vendor/system_config_source_enabled</source_model>
+								<comment>Vendor module work by "Yes" option.</comment>
+								<sort_order>1</sort_order>
+								<show_in_default>1</show_in_default>
+								<show_in_website>0</show_in_website>
+								<show_in_store>0</show_in_store>
+							</enabled>
+							<livekey translate="label">
+								<label>Module Activation Key for live</label>
+								<frontend_type>text</frontend_type>
+								<comment>Module will work on live by live activate key.Please contact "hypertechzone@gmail.com"</comment>
+								<sort_order>2</sort_order>
+								<show_in_default>1</show_in_default>
+								<show_in_website>0</show_in_website>
+								<show_in_store>0</show_in_store>
+							</livekey>
+							<devkey translate="label">
+								<label>Module Activation Key for dev</label>
+								<frontend_type>text</frontend_type>
+								<comment>Module will work on development by dev activate key.Please contact "hypertechzone@gmail.com"</comment>
+								<sort_order>3</sort_order>
+								<show_in_default>1</show_in_default>
+								<show_in_website>0</show_in_website>
+								<show_in_store>0</show_in_store>
+							</devkey>							
+							<vendor_link translate="label">
+								<label>Display Vendor link</label>
+								<frontend_type>select</frontend_type>
+								<source_model>vendor/system_config_source_enabled</source_model>
+								<comment>Select "Yes" option. Vendor link will display under frontend top menu.</comment>
+								<sort_order>4</sort_order>
+								<show_in_default>1</show_in_default>
+								<show_in_website>0</show_in_website>
+								<show_in_store>0</show_in_store>
+							</vendor_link>
+							<vendor_permission translate="label">
+								<label>Auto Vendor Activate</label>
+								<frontend_type>select</frontend_type>
+								<source_model>vendor/system_config_source_enabled</source_model>
+								<comment>Select "Yes" option. Vendor account automatic active. If vendor register from frontend.</comment>
+								<sort_order>5</sort_order>
+								<show_in_default>1</show_in_default>
+								<show_in_website>0</show_in_website>
+								<show_in_store>0</show_in_store>
+							</vendor_permission>
+							<product_active translate="label">
+								<label>Require Vendor Product Approval By Admin</label>
+								<frontend_type>select</frontend_type>
+								<source_model>vendor/system_config_source_enabled</source_model>
+								<comment>Select "Yes" option to require vendor product approval by admin,if admin approved vendor product then vendor product(s) show in the frontend.</comment>
+								<sort_order>6</sort_order>
+								<show_in_default>1</show_in_default>
+								<show_in_website>0</show_in_website>
+								<show_in_store>0</show_in_store>
+							</product_active>
+							<email translate="label">
+								<label>Admin Email Address</label>
+								<frontend_type>text</frontend_type>
+								<comment>Admin get notification on this email address.If vendor register from frontend.</comment>
+								<sort_order>7</sort_order>
+								<show_in_default>1</show_in_default>
+								<show_in_website>0</show_in_website>
+								<show_in_store>0</show_in_store>
+							</email>							
+					</fields>
+				</settings>
+			</groups>
+        </vendor>
+	</sections>
+</config>

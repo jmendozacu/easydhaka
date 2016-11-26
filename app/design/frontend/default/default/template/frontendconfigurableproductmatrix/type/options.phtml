@@ -1,0 +1,9 @@
+<?php $_product = $this->getProduct();?>
+<?php $aco = ($this->helper('frontendconfigurableproductmatrix')->isAdvancedCustomOptionEnabled() ? 'customoptions/catalog-product-view-options.phtml' : 'catalog/product/view/options.phtml'); ?>
+<?php if($this->helper('frontendconfigurableproductmatrix')->isEnable($_product) && $this->helper('frontendconfigurableproductmatrix')->isSecondMatrix($_product) != 1): $mPosition = $this->helper('frontendconfigurableproductmatrix')->getMatrixPosition($_product);?>
+	<?php if($mPosition != 2 && $this->helper('frontendconfigurableproductmatrix')->isShowFDD($_product) == 1):?>
+        <?php echo $this->setTemplate($aco)->toHtml();?>
+    <?php endif;?>
+<?php else:?>
+	<?php echo $this->setTemplate($aco)->toHtml();?>
+<?php endif;?>

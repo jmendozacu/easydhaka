@@ -1,0 +1,142 @@
+
+<?php
+@$dataId = Mage::app()->getRequest()->getParam('id');
+$storeId = Mage::app()->getRequest()->getParam('store');
+
+@$data["order"] = Mage::helper('estimateddeliverydate')->getData(@$dataId, $storeId);
+@$data["backorder"] = Mage::helper('estimateddeliverydate')->getData(@$dataId, $storeId, 'back');
+//zend_debug::dump(@$data);
+?>
+<script language="javascript">
+    var leadtime = {
+        data:<?php echo json_encode(@$data) ?>,
+        useConfig: function(elt, type) {
+            eval("data=this.data." + type + "order");
+
+            field = elt.ancestors()[0].select('input')[0];
+
+
+            if (elt.checked) {
+                field.disabled = true;
+                field.value = data.config.leadtime;
+                field.addClassName("disabled");
+            }
+            else {
+
+                field.removeClassName("disabled");
+                field.disabled = false;
+            }
+        },
+        useBase: function(elt, type) {
+            eval("data=this.data." + type + "order");
+
+            field_1 = elt.ancestors()[1].select('input')[0];
+            field_2 = elt.ancestors()[1].select('input')[1];
+
+            if (elt.checked) {
+                field_1.disabled = true;
+                field_2.disabled = true;
+                field_1.addClassName("disabled");
+                field_2.addClassName("disabled");
+                field_1.value = data.leadtime;
+                field_2.checked = data.use_config_leadtime;
+            }
+            else {
+
+                field_2.disabled = false;
+                field_2.removeClassName("disabled");
+                if (!field_2.checked) {
+                    field_1.disabled = false;
+                    field_1.removeClassName("disabled");
+                }
+
+            }
+
+        }
+    }
+</script>
+
+<div class="entry-edit">
+
+    <div class="entry-edit-head">
+
+        <h4 class="icon-head head-edit-form fieldset-legend"><?php echo Mage::helper('estimateddeliverydate')->__('Shipment lead times') ?></h4>
+
+    </div>
+
+    <fieldset>
+
+
+
+
+        <table cellspacing="0" class="form-list" id="table_catalog_orders_leadtime">
+
+            <tr>
+                <td class="label">
+                    <label for="orders_leadtime">
+                        <?php echo Mage::helper('estimateddeliverydate')->__('In stock items') ?>
+                    </label>
+                </td>
+                <td class="value">
+                    <input id="orders_leadtime" name="orders_leadtime" class="updateOnChange input-text validate-number <?php echo (@$data['order']['use_config_leadtime'] || @$data['order']['use_base_leadtime']) ? "disabled" : null; ?>" <?php echo (@$data['order']['use_config_leadtime'] || @$data['order']['use_base_leadtime']) ? "disabled" : null; ?> type="text" value="<?php echo @$data['order']['leadtime']; ?>" />
+                    <br>
+                    <input class="updateOnChange" name="use_config_orders_leadtime" type="checkbox" id="use_config_orders_leadtime" value="1" onclick="leadtime.useConfig(this, '');" <?php echo (@$data['order']['use_base_leadtime']) ? "disabled" : null; ?> <?php echo (@$data['order']['use_config_leadtime']) ? "checked" : null; ?>/>
+                    <label for="use_config_orders_leadtime" class="normal"><?php echo Mage::helper('catalog')->__('Use Config Settings') ?></label>
+
+                </td>
+                <td class="value scope-label"><?php echo Mage::helper('adminhtml')->__('[STORE VIEW]') ?></td>
+                <?php if ($storeId != Mage_Core_Model_App::ADMIN_STORE_ID): ?>
+                    <td class="value use-default">
+                        <input class="updateOnChange" type="checkbox" value="1" onclick="leadtime.useBase(this, '');"  id="use_base_orders_leadtime" name="use_base_orders_leadtime" <?php echo (@$data['order']['use_base_leadtime']) ? "checked" : null; ?>>
+                        <label class="normal" for="use_base_orders_leadtime"><?php echo Mage::helper('catalog')->__('Use Default Value'); ?></label>
+                    </td>
+                <?php endif; ?>
+            </tr>
+        </table>
+
+
+
+
+
+
+        <table cellspacing="0" class="form-list" id="table_catalog_backorders_leadtime">
+
+            <tr>
+                <td class="label">
+                    <label for="backorders_leadtime">
+                        <?php echo Mage::helper('estimateddeliverydate')->__('Backordered items') ?>
+                    </label>
+                </td>
+                <td class="value">
+                    <input  id="backorders_leadtime" name="backorders_leadtime" class="updateOnChange input-text validate-number <?php echo (@$data['backorder']['use_config_leadtime'] || @$data['backorder']['use_base_leadtime']) ? "disabled" : null; ?>" <?php echo (@$data['backorder']['use_config_leadtime'] || @$data['backorder']['use_base_leadtime']) ? "disabled" : null; ?> type="text" value="<?php echo @$data['backorder']['leadtime']; ?>" />
+                    <br>
+                    <input class="updateOnChange" name="use_config_backorders_leadtime" type="checkbox" id="use_config_backorders_leadtime" value="1" onclick="leadtime.useConfig(this, 'back');" <?php echo (@$data['backorder']['use_base_leadtime']) ? "disabled" : null; ?> <?php echo (@$data['backorder']['use_config_leadtime']) ? "checked" : null; ?>/>
+                    <label for="use_config_backorders_leadtime" class="normal"><?php echo Mage::helper('catalog')->__('Use Config Settings') ?></label>
+
+                </td>
+                <td class="value scope-label"><?php echo Mage::helper('adminhtml')->__('[STORE VIEW]') ?></td>
+                <?php if ($storeId != Mage_Core_Model_App::ADMIN_STORE_ID): ?>
+                    <td class="value use-default">
+                        <input class="updateOnChange" type="checkbox" value="1" onclick="leadtime.useBase(this, 'back');"  id="use_base_backorders_leadtime" name="use_base_backorders_leadtime" <?php echo (@$data['backorder']['use_base_leadtime']) ? "checked" : null; ?>>
+                        <label class="normal" for="use_base_backorders_leadtime"><?php echo Mage::helper('catalog')->__('Use Default Value'); ?></label>
+                    </td>
+                <?php endif; ?>
+            </tr>
+        </table>
+    </fieldset>
+</div>
+<script>
+
+    $$(".updateOnChange").each(function(input) {
+        input.observe("change", function() {
+            if (input.type === "checkbox")
+                $(input.id.replace("", null)).value = (input.checked) ? 1 : 0;
+            else
+                $(input.id.replace("", null)).value = input.value;
+        })
+    })
+
+   
+</script>
+
+

@@ -1,0 +1,50 @@
+<div class="entry-edit">
+    <div class="entry-edit-head">
+        <h4 class="icon-head head-edit-form fieldset-legend"><?php echo Mage::helper('catalog')->__('User Categories') ?></h4>
+    </div>
+	<div class="user_store_list">
+		<fieldset>
+			<div id="product-categories" class="tree">			
+				<?php
+					$userId 		= $this->getRequest()->getParam('user_id');
+					$userCategories = array();
+					if($userId){
+						$userCategories = explode(",", Mage::getModel('admin/user')->load($userId)->getCategoryIds());
+					}
+					
+					$rootcatId= Mage::app()->getStore()->getRootCategoryId();
+					$categories = Mage::getModel('catalog/category')->getCategories($rootcatId);
+					function  get_categories($categories,$userCategories) {
+						$array= '<ul>';
+						foreach($categories as $category) {
+							$cat = Mage::getModel('catalog/category')->load($category->getId());	
+							$count = $cat->getProductCount();
+							$space = ""; 
+							if($cat->getLevel()>0){
+								for($i=0;$i<$cat->getLevel();$i++){$space .='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';}
+							}
+							$array .= '<li>';						
+							if($cat->getLevel()>0){
+								$array .= $space .
+								'<input type="checkbox" name="categories[]" value="'.$category->getId().'"';
+								if(in_array($cat->getId(),$userCategories)){
+									$array .= 'checked="checked" />&nbsp;';
+								} else {
+									$array .= ' />&nbsp;';
+								}
+								$array .= $category->getName() . "(".$count.")\n";
+							}	
+							if($category->hasChildren()) {
+								$children = Mage::getModel('catalog/category')->getCategories($category->getId());
+								 $array .=  get_categories($children,$userCategories);
+							}
+							$array .= '</li>';			
+						}
+						return  $array . '</ul>';
+					}
+					echo  get_categories($categories,$userCategories); 
+				?>	
+			</div>
+		</fieldset>		
+	</div>
+</div>

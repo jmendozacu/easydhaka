@@ -1,0 +1,89 @@
+<?php
+/**
+ * aheadWorks Co.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://ecommerce.aheadworks.com/AW-LICENSE.txt
+ *
+ * =================================================================
+ *                 MAGENTO EDITION USAGE NOTICE
+ * =================================================================
+ * This package designed for Magento community edition
+ * aheadWorks does not guarantee correct work of this extension
+ * on any other Magento edition except Magento community edition.
+ * aheadWorks does not provide extension support in case of
+ * incorrect edition usage.
+ * =================================================================
+ *
+ * @category   AW
+ * @package    AW_Blog
+ * @version    1.2.1
+ * @copyright  Copyright (c) 2010-2012 aheadWorks Co. (http://www.aheadworks.com)
+ * @license    http://ecommerce.aheadworks.com/AW-LICENSE.txt
+ */
+
+$posts = $this->getPosts();
+$countitem = count($posts) ;
+?>
+
+<div class="block-lt-blogs">
+<div class="three-title-home">
+	<h2><?php echo $this->__('Latest Blogs');?></h2>
+</div>
+
+<ul class="grid-blog">
+	<?php $i=1; foreach ($posts as $post): ?>
+		<li class="item">
+			<div class="item-latest-blog">
+				<?php if($i==1){?>
+				<div class="img-wrapper item-lb-image">
+					
+					<a title="<?php echo substr($post->getTitle(),0,25);?>" href="<?php echo $post->getAddress(); ?>">
+						<img alt="<?php echo substr($post->getTitle(),0,25);?>" src="<?php echo  Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_MEDIA).$post->getPostImage();?>"> 
+					</a>
+				</div>
+				<?php } else{?>
+					<div class="img-wrapper item-lb-small-img">
+						<a title="<?php echo substr($post->getTitle(),0,25);?>" href="<?php echo $post->getAddress(); ?>">
+							<img alt="<?php echo substr($post->getTitle(),0,25);?>" src="<?php echo  Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_MEDIA).$post->getPostImage();?>"> 
+						</a>
+					</div>
+				<?php }?>
+				<div class="lt-blog-info <?php if($i==1) echo $this->__('info-first-blog')?>">
+					<div class="item-lb-title">
+						<a title="<?php echo substr($post->getTitle(),0,50);?>" href="<?php echo $post->getAddress(); ?>"><span><?php echo substr($post->getTitle(),0,50); ?></span>
+						</a>
+					</div>
+					<div class="w-date">
+						<?php $date = $post->getCreatedTime(); 
+							echo date("d",strtotime($date)); echo $this->__('/');
+							echo date("m",strtotime($date)); echo $this->__('/');
+							echo date("Y",strtotime($date));
+						?>
+					</div>
+					<?php if($i==1){?>
+					<div class="item-lb-description">
+						<?php echo substr(strip_tags($post->getShortContent()),0,71);  ?>
+						...
+					</div>
+					<?php }?>
+				</div>
+				<!--
+				<?php if ($this->getCommentsEnabled()): ?>
+					<div class="comment-blog">
+						<a class="link-comment" href="<?php echo $post->getAddress(); ?>#commentBox" ><?php echo $post->getCommentCount(); ?>  <?php if($post->getCommentCount()<=1) echo $this->__('Comment'); ?>  <?php if($post->getCommentCount()>1) echo $this->__('Comments'); ?></a> 
+					</div>
+				<?php endif; ?>
+				-->
+			</div>
+		</li>
+		<?php $i++;?>
+		<?php if($i==4) break;?>
+		<?php endforeach; ?>
+</ul>
+<a class="btn-readmore" href="<?php echo $this->getUrl('blog')?>" title="<?php echo $this->__('Read More')?>"><?php echo $this->__('Read More')?></a>
+</div>

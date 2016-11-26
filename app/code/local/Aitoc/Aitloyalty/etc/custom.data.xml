@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<config>
+    <template>
+        <adminhtml>
+            <file path="design--adminhtml--default--default--template--sales--order--creditmemo--create--items"></file>
+            <file path="design--adminhtml--default--default--template--sales--order--invoice--create--items"></file>
+            <file path="design--adminhtml--default--default--template--sales--order--invoice--view--items"></file>
+            <file path="design--adminhtml--default--default--template--sales--order--invoice--create--items--renderer--default"></file>
+            <file path="design--adminhtml--default--default--template--sales--order--invoice--view--items--renderer--default"></file>
+            <file path="design--adminhtml--default--default--template--sales--order--totals--discount"></file>
+            <file path="design--adminhtml--default--default--template--sales--order--view--items"></file>
+            <file path="design--adminhtml--default--default--template--sales--order--creditmemo--view--items"></file>
+            <file path="design--adminhtml--default--default--template--sales--order--view--items--renderer--default"></file>
+            <file path="design--adminhtml--default--default--template--sales--order--creditmemo--create--items--renderer--default"></file>
+            <file path="design--adminhtml--default--default--template--sales--order--creditmemo--view--items--renderer--default"></file>
+        </adminhtml>
+    </template>
+</config>
+<!--
+/**
+ * Loyalty Program
+ *
+ * @category:    Aitoc
+ * @package:     Aitoc_Aitloyalty
+ * @version      2.3.20
+ * @license:     SgbtEEmO4TN5qVIe4RyMXvFvrV2LxMVBSCZx9T3Gjw
+ * @copyright:   Copyright (c) 2015 AITOC, Inc. (http://www.aitoc.com)
+ */
+-->

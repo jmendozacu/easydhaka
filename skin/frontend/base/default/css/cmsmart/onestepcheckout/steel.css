@@ -1,0 +1,78 @@
+.DynarchCalendar-focused {
+  background-color: #fff;
+}
+
+.DynarchCalendar-topBar {
+  /* background: url("../images/brushed-steel.jpg") no-repeat 50% 0; */
+   background-color: #fff;
+}
+
+.DynarchCalendar-bottomBar {
+  /* background: url("../images/brushed-steel.jpg") no-repeat 50% 50%; */
+	background-color: #fff;
+	display: none; 
+}
+
+.DynarchCalendar-hover-title,
+.DynarchCalendar-hover-navBtn,
+.DynarchCalendar-hover-bottomBar-today,
+.DynarchCalendar-menu table td div.DynarchCalendar-hover-navBtn {
+  background: #dde url("images/coolbg.png") repeat-x 0 50%;
+}
+.DynarchCalendar-hover-title div,
+.DynarchCalendar-hover-navBtn div { background-color: transparent; }
+
+.DynarchCalendar-pressed-title,
+.DynarchCalendar-pressed-navBtn,
+.DynarchCalendar-pressed-bottomBar-today,
+.DynarchCalendar-menu table td div.DynarchCalendar-pressed-navBtn {
+  background: #445 url("images/coolbg.png") repeat-x 0 50%;
+}
+.DynarchCalendar-pressed-title div,
+.DynarchCalendar-pressed-navBtn div { background-color: transparent; }
+
+.DynarchCalendar-hover-week,
+.DynarchCalendar-focused .DynarchCalendar-hover-week {
+  background: #ddd url("images/coolbg.png") repeat-x 0 50%;
+}
+
+.DynarchCalendar {
+  /* background: url("images/steel.jpg") no-repeat 50% 30px; */
+  background: #fff;
+}
+
+
+.DynarchCalendar-day-selected {
+  background-color: #ef672f;
+  color: #fff !important;
+  /* background-image: url("images/coolbg.png"); */
+  background-position: 0 50%;
+  background-repeat: repeat-x;
+}
+
+.DynarchCalendar-day-today.DynarchCalendar-day-selected {
+  background-color: #ef672f;
+  color: #fff !important;
+}
+/* 
+.DynarchCalendar-focused .DynarchCalendar-body {
+  background: url("images/shadow-b.png") repeat-x 0 0;
+} */
+.onestepcheckout-wrapper-onestepcheckout.style2  .checkout-review-form  .onestepcheckout-data-table  input {
+	text-align: center;
+    width: 2.5em;font-size: 14px;
+}
+@media only screen and (min-width: 600px) and (max-width: 959px) {
+	
+}
+
+@media (min-width: 768px) {
+
+}
+@media only screen and (max-width: 610px) {
+
+}
+
+@media only screen and (max-width: 598px) {
+
+}

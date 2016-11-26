@@ -1,0 +1,74 @@
+<?php  
+	$_product = $this->getProduct();
+	$_isCptp = $this->helper('frontendconfigurableproductmatrix')->isCptpEnable();
+	$productAttributeOptions = $_product->getTypeInstance(true)->getConfigurableAttributesAsArray($_product);
+	$simpleProducts = $_product->getTypeInstance(true)->getUsedProductCollection($_product);
+	$allSimpleIds = Mage::getModel('catalog/product_type_configurable')->getChildrenIds($_product->getId());
+	$html = '<table class="data-table">';
+	$html .='<thead><tr>';
+	$colCount = 0;
+	foreach ($productAttributeOptions as $productAttribute) {
+		if($colCount == 0)
+		{
+			$class = "first";
+		}
+		$html .='<th class="'.$class.'">'.$productAttribute['label'].'</th>';
+		$colCount++;
+	}
+	if($this->isShowStock()) $html .='<th>'.$this->__("Stock").'</th>';
+	$html .='<th class="last">'.$this->__("Quantity").'</th></tr></thead><tbody>';
+	
+					$rowCount = 1;
+					$totalRowCount = count($allSimpleIds[0]);
+					foreach ($allSimpleIds[0] as $id) {
+						$rowClass = '';
+						$simpleProduct = Mage::getModel('catalog/product')->load($id);  
+						if(!$simpleProduct->isSaleable())
+						{
+							continue;
+						}
+						if($rowCount == 1)
+						{
+							$rowClass = "first";
+						}
+						else if($rowCount == $totalRowCount)
+						{
+							$rowClass = "last";
+						}
+						if($rowCount %2 == 0)
+						{
+							$rowClass .= " even";
+						}
+						else
+						{
+							$rowClass .= " odd";
+						}
+						$rowCount ++;
+						$html .= '<tr class="'.$rowClass.'">';
+						 
+						 foreach ($productAttributeOptions  as $productAttribute) {
+							if($this->helper('frontendconfigurableproductmatrix')->isReplacedWithSwatchs($productAttribute['attribute_id'])){
+								$image = '';
+								if($simpleProduct->getSmallImage() != '' && $simpleProduct->getSmallImage() != 'no_selection'){
+									$image = $this->helper('catalog/image')->init($simpleProduct, 'small_image')->keepFrame($this->getKeepFrame())->resize($this->getImageSize());
+								}
+								$html .= "<td>".$this->generateSwatches($productAttribute['attribute_id'],$simpleProduct->getData($productAttribute['attribute_code']),$simpleProduct->getAttributeText($productAttribute['attribute_code']), $productAttribute['attribute_code'], $image);
+							} else {
+								$html .= "<td>".$simpleProduct->getAttributeText($productAttribute['attribute_code']);
+							}
+							$html .= "<input type='hidden' name='configqty[".$_product->getId()."][".$simpleProduct->getId()."][super_attribute][".$productAttribute['attribute_id']."]' value='".$simpleProduct->getData($productAttribute['attribute_code'])."' />";
+							$html .= "</td>";
+						}
+						if($this->isShowStock()) $html .= "<td>".round($simpleProduct->getStockItem()->getQty())."</td>";
+						$html .= "<td><input type='text'  class='qty' value='' name='configqty[".$_product->getId()."][".$simpleProduct->getId()."][qty]'/>";
+						if($this->isSimple()){
+							$html .= '<input type="hidden" name="configqty['.$_product->getId().']['.$simpleProduct->getId().'][customprice]" value="'.$simpleProduct->getFinalPrice().'" />';
+						}
+						$html .= "</td>";  
+						$html .= "</tr>";
+					} 
+	 $html .= "</tbody></table>";
+	 if($_isCptp){
+		$html .= '<input type="hidden" name="configqty['.$_product->getId().'][cptp_qty]" class="cptp_qty"/>'; 
+	 }
+	 echo $html;

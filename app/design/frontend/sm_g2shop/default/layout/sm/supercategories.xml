@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<layout version="1.0">
+	<default>
+		<reference name="head">
+			<action method="addItem"  >
+				<type>skin_css</type>
+				<name>sm/supercategories/css/animate.css</name>
+			</action>
+			<action method="addItem">
+				<type>skin_css</type>
+				<name>sm/supercategories/css/supercategories.css</name>
+			</action>
+		</reference>
+	</default>
+	<supercategories_index_index>
+		<reference name="content">
+			<block type="supercategories/list" name="supercategories.list.default" template="sm/supercategories/default.phtml">
+			</block>
+		</reference>
+	</supercategories_index_index>
+	<supercategories_index_ajax>
+		<block type="supercategories/list" name="supercategories_ajax" as="supercategories_ajax" template="sm/supercategories/default_items.php" output="toHtml" />
+	</supercategories_index_ajax>
+</layout>

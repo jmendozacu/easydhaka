@@ -1,0 +1,119 @@
+<form action="" id="onestepcheckout-delivery" method="post">
+<div>
+	<ul>
+		
+		<?php if($this->getAsaOption()){?>
+		<li style="margin-bottom:10px;">
+			<label>
+			<input type="radio" name="deliverydate" id="deliverydate-possible" value="As soon as possible" checked style="margin-right:5px;"><span><?php echo $this->__('As soon as possible');?></span>
+			</label>
+		</li>
+		<?php } 
+		?>
+		
+		<li>
+			<label style="margin-right:5px; float:left;"><!--float:left;-->
+			<?php if($this->getAsaOption())
+					 {			
+			?>
+			<input type="radio" name="deliverydate" id="deliverydate-late" value="Late" style="margin-right:5px;">
+			<?php 
+			}
+			else 
+			{?>
+			<input type="hidden" name="deliverydate" value="Late">
+			<?php }?>
+			</label>
+			<span>
+			<div id="datex">
+						<div class="blockdate nbblockdate">
+							<span><?php echo $this->__('Date:');?> </span>
+							
+							<span id="nbdate" style="text-align:left;">
+							</span>
+						</div>
+				<input type="hidden" style="width: 120px;" class="input-text" value="" id="selected_date" name="selected_date"/>
+			    <img style="margin-bottom:3px;" title="Select Date" id="date_select_trig" class="v-middle" alt="" src="<?php echo $this->getSkinUrl("css/cmsmart/onestepcheckout/images/icon-calender.png");?> "/>
+			</div>	    
+			    
+			    <script type="text/javascript">
+			    //<![CDATA[
+					//showAt(x, y, animated)
+			        var calsetup = Cmsmartcalendar.setup({
+			            trigger    : "date_select_trig",
+						inputField : "selected_date",
+						onSelect   : function() { this.hide() 
+							jQuery("#nbdate").text(jQuery('#selected_date').val());
+							jQuery("#deliverydate-late").attr("checked", "checked");
+						},
+						disabled: function(date)  {
+							var now= new Date();
+							var disableCalendar = false;
+							var disableWeekendOption = [];
+							var disabledayOption = [];
+							if(date.getFullYear()   <=   now.getFullYear()){
+								if(date.getMonth()   <=   now.getMonth()){
+									if(date.getDate()   <   now.getDate()){
+										disableCalendar = true;
+									}
+								}
+							}
+							if(date.getFullYear()   <=   now.getFullYear())  {
+								if(date.getMonth()   <   now.getMonth()){
+									disableCalendar = true; 
+								}
+							}
+							if(date.getFullYear()   <   now.getFullYear())  { disableCalendar = true; }
+							
+							
+							
+							<?php $disableWeekendOption = $this->getDisableWeekendOption()?>
+							<?php if (!empty($disableWeekendOption)): ?>
+							<?php $i=0;$kk=""; foreach($this->getDisableWeekendOption() as $disableWeekendOption): ?>
+								<?php if($disableWeekendOption!=""): ?>
+									<?php if($i==0): ?>
+										<?php $kk = 'date.getDay() == '.$disableWeekendOption ?>
+									<?php else: ?>
+										<?php $kk =  $kk.' || date.getDay() == '.$disableWeekendOption ?>
+									<?php endif; ?>
+									<?php $i++; ?>
+								<?php endif; ?>
+							<?php endforeach; ?>
+							<?php if($kk!=''): ?>
+								if(<?php echo $kk ?>){ disableCalendar = true; }
+								<?php endif; ?>
+							<?php endif; ?>
+							<?php $disabledayOptions = $this->getDisabledayOption()?>
+							<?php $i=0; if (!empty($disabledayOptions)): ?>
+							<?php foreach($disabledayOptions as $disabledayOption): ?>
+								<?php if(!empty($disabledayOption)): ?>
+									 <?php $arrayDates = explode('/', $disabledayOption); ?>
+										<?php if (is_numeric(str_replace(array("(", ")"),"",$arrayDates[0]))&&is_numeric(str_replace(array("(", ")"),"",$arrayDates[1]))&&is_numeric(str_replace(array("(", ")"),"",$arrayDates[2]))): ?>
+											disabledayOption['<?php echo $i++; ?>']= [<?php echo str_replace(array("(", ")"),"",$arrayDates[0]); ?>,<?php echo str_replace(array("(", ")"),"",$arrayDates[1]); ?>,<?php echo str_replace(array("(", ")"),"",$arrayDates[2]); ?>];
+										<?php endif; ?>
+								<?php endif; ?>
+							<?php endforeach; ?>
+								for	(var index = 0; index < disabledayOption.length; index++) {
+									if(date.getFullYear()   ==  disabledayOption[index]['2'])  { if(date.getMonth()+1      ==  disabledayOption[index]['0'])     { if(date.getDate()     ==   disabledayOption[index]['1'])  { disableCalendar = true; } }}
+								}								
+							<?php endif; ?> 
+							
+							return disableCalendar;
+						}
+			        });
+
+					jQuery('.DynarchCalendar-topCont').on('click', '#date_select_trig', function(){
+						top_el = jQuery('#date_select_trig').offset().top;
+						left_el = jQuery('#date_select_trig').offset().left;
+						jQuery('.DynarchCalendar-topCont').css('top', top_el+' !important');
+						jQuery('.DynarchCalendar-topCont').css('left', left_el+' !important');
+					});							    
+				//]]>
+			    </script>
+			</span>
+					 
+		</li>
+	</ul>
+</div>
+</form>
+

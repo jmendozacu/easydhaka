@@ -1,0 +1,23 @@
+/*------------- zen-------*/
+.sm_zen .radio,.sm_zen .checkbox {
+	padding-left:0px;
+}
+.mini-cartpro .block-content{
+	border:1px solid #ebebeb;
+}
+.sm-maxtrix-slider .mts-wrap .mts-info-inner .mts-container .mts-container-inner, 
+.sm-maxtrix-slider .mts-slider .mts-container .mts-container-inner,
+#yt_main .sm-maxtrix-slider .mts-wrap .mts-info-inner{
+	/*height:auto !important;*/
+}
+
+.sm-maxtrix-slider .mts-wrap img{
+	width: auto !important;
+}
+#yt_wrapper #yt_header ul.links li{
+	padding: 0 0px 7px 0px;
+}
+.mini-cartpro .block-content .bottom-action .button:hover:before{
+	bottom: 50px;
+}
+dl#checkout-payment-method-load dt:first-child + dt input{ margin-left:-25px;}

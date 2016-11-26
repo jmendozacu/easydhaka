@@ -1,0 +1,236 @@
+<?php
+/*------------------------------------------------------------------------
+ # SM Super Categories - Version 1.0.0
+ # Copyright (c) 2014 YouTech Company. All Rights Reserved.
+ # @license - Copyrighted Commercial Software
+ # Author: YouTech Company
+ # Websites: http://www.magentech.com
+-------------------------------------------------------------------------*/
+global $var_yttheme;
+$image_base = Mage::getModel('catalog/product')->getSmallImageUrl();
+$helper = Mage::helper('supercategories/data');
+$target = $this->_getConfig('product_links_target');
+$cat_info = $this->getListCategoriesFilter();
+$list = $this->getListCriterionFilter("");
+if (!empty($list)) {
+	$stop = $this->_getConfig('stop');
+	if($stop=="1"){
+		$stop_hover='true';
+	}else{
+		$stop_hover='false';
+	}
+
+	$autoplay = $this->_getConfig('play');
+	
+	if($autoplay=="1"){
+		$play='true';
+	}else{
+		$play='false';
+	}
+	$catwidth = $this->_getConfig('img_cat_width');
+	$catheight = $this->_getConfig('img_cat_height');
+	
+	
+	$interval = (int)$this->_getConfig('delay');
+	$interval = $play ? $interval : 0;
+	$speed =(int)$this->_getConfig('duration');
+	$start = (int) $this->_getConfig('start');
+	$start = ( $start <= 0 || $start > count($list) ) ? 0 : $start - 1;
+	$step = (int)$this->_getConfig('scroll',1);
+	$step = $step <= 0 ? 1: $step;	
+	$btn = $this->_getConfig('next_prev_display');
+	$nb1 = $this->_getConfig('nb_column1', 4);
+	$nb2 = $this->_getConfig('nb_column2', 3);
+	$nb3 = $this->_getConfig('nb_column3', 2);
+	$nb4 = $this->_getConfig('nb_column4', 2);
+	$import_str = "";
+	$jsHelper = Mage::helper('core/js');
+	// jquery has not added yet
+	if (!defined('MAGENTECH_JQUERY') && (int)$this->_getConfig('include_jquery')) {
+		// if module allowed jquery.
+		$import_str .= $jsHelper->includeSkinScript('sm/supercategories/js/jquery-1.8.2.min.js');
+		$import_str .= $jsHelper->includeSkinScript('sm/supercategories/js/jquery-noconflict.js');
+		$import_str .= $jsHelper->includeSkinScript('sm/supercategories/js/slider.js');
+		define('MAGENTECH_JQUERY', 1);
+	}
+	echo $import_str;
+	$instance = rand() . time();
+	$tag_id = 'sm_listing_tabs_' . rand() . time();
+	$uniqued ='cat_slider_'.rand().time();
+	$class_ltabs = 'ltabs00-' . $this->_getConfig('nbi_column1', 4) . ' ltabs01-' . $this->_getConfig('nbi_column1', 3) . ' ltabs02-' . $this->_getConfig('nbi_column2', 3) . ' ltabs03-' . $this->_getConfig('nbi-column3', 2) . ' ltabs04-' . $this->_getConfig('nbi-column4', 1)
+	?>
+	<?php $class_respl = 'preset01-' . $this->_getConfig('nb_column1', 4) . ' preset02-' . $this->_getConfig('nb_column2', 3) . ' preset03-' . $this->_getConfig('nb_column3', 2) . ' preset04-' . $this->_getConfig('nb_column4', 2) . ' preset05-' . $this->_getConfig('nb_column5', 1); ?>
+	<!--[if lt IE 9]>
+	<div id="<?php echo $tag_id; ?>" class="sj-listing-tabs msie lt-ie9 first-load"><![endif]-->
+	<!--[if IE 9]>
+	<div id="<?php echo $tag_id; ?>" class="sj-listing-tabs msie first-load"><![endif]-->
+	<!--[if gt IE 9]><!-->
+	<div id="<?php echo $tag_id; ?>" class="sj-listing-tabs first-load"><!--<![endif]-->
+		<?php
+		$pretext = $this->_getConfig('pretext');
+		if (!empty($pretext)) {
+			?>
+			<div class="pre-text"><?php echo $this->_getConfig('pretext'); ?></div>
+		<?php } ?>
+		
+		
+		<div class="category-wrap-cat">
+			<?php foreach( $cat_info as $cat){
+				$cat_child = $cat['child'];
+			?>
+				<div class="title-imageslider title-home">
+					<a href="<?php echo  $cat['link']?>" title="<?php echo $cat['name'];?>"><?php echo $cat['name'];?></a>
+				</div>
+				
+				<?php if( $cat_child != null ){?>
+				<div id="<?php echo $uniqued; ?>" class="container-slider">
+					<div class="slider-super-wrapper <?php if($btn == 0) echo $this->__('hidden-button-slider');?> <?php echo $class_respl;?>">
+								<div class="sm_imageslider slider-supercategories-1">
+								<?php foreach( $cat_child as $item ){
+									if( $item['image'] == "" ){
+										$item['image'] = $image_base = Mage::getModel('catalog/product')->getSmallImageUrl();
+									}
+								?>
+									<div class="item">
+										<div class="item-wrap">
+											<div class="cat-child-image">
+												<a href="<?php echo $item['link'];?>" class="catsp-image">
+													<img width="<?php echo $this->_getConfig('img_cat_width'); ?>" height="<?php echo $this->_getConfig('img_cat_height'); ?>"  src="<?php echo $item['image'];?>" alt="<?php echo $item['name'];?>"/>
+												</a>
+											</div>
+											<div class="cat-child-title">
+												<a href="<?php echo $item['link'];?>" <?php echo $helper->parseTarget($this->_getConfig('product_links_target','_self')) ?>>
+													<?php echo $helper->truncate($item['name'], $this->_getConfig('cat_title_maxlength', 25)); ?>
+												</a>								
+											</div>							
+										</div>
+									</div>
+								<?php }?>
+								</div>
+					</div>					
+				</div>
+				<?php }?>
+			<?php }?>
+			
+			<script>
+				jQuery(document).ready(function($) {
+					$('.slider-supercategories-1').owlCarousel({
+						pagination: false,
+						center: false,
+						nav: true,
+						loop: false,
+						margin: 1,
+						navText: [ 'prev', 'next' ],
+						slideBy: <?php echo $step;?>,
+						autoplay: <?php echo $play;?>,
+						autoplayTimeout: <?php echo $interval;?>,
+						autoplayHoverPause: <?php echo $stop_hover;?>,
+						autoplaySpeed: <?php echo $speed;?>,
+						startPosition: <?php echo $start;?>,
+						responsive:{
+							<?php if( $var_yttheme->getParam('device_responsive') == 1 ) {?>
+							0:{
+								items:<?php echo $nb4;?>
+							},
+							480:{
+								items:<?php echo $nb3;?>
+							},
+							768:{
+								items:<?php echo $nb2;?>
+							},
+							1200:{
+								items:<?php echo $nb1;?>
+							}
+						<?php } else {?>
+							0:{
+								items:<?php echo $nb1;?>
+							},
+							480:{
+								items:<?php echo $nb1;?>
+							},
+							768:{
+								items:<?php echo $nb1;?>
+							},
+							1200:{
+								items:<?php echo $nb1;?>
+							}
+						<?php } ?>
+						}
+					});	  
+				});	
+		</script>
+		</div>
+		
+		<?php 
+			$cms_id = Mage::getSingleton('cms/page')->getIdentifier();
+		?>
+		<div class="ltabs-wrap tab-product-ex">
+			<div class="ltabs-tabs-container" data-delay="<?php echo $this->_getConfig('product_delay', 300); ?>"
+			     data-duration="<?php echo $this->_getConfig('product_duration', 600); ?>"
+			     data-effect="<?php echo $this->_getConfig('effect'); ?>"
+			     data-ajaxurl="<?php echo Mage::getBaseUrl().'supercategories/index/ajax'; ?>" data-modid="<?php echo $tag_id; ?>">
+				<!--Begin Tabs-->
+				<?php include('default_tabs.phtml'); ?>
+				<?php include('default_js.phtml'); ?>
+			</div>
+			<!-- End Tabs-->
+			<div class="ltabs-items-container"><!--Begin Items-->
+				<?php foreach ($list as $items) {
+					$child_items = isset($items->child) ? $items->child : '';
+					$cls_device = $class_ltabs;
+					$cls_animate = $this->_getConfig('effect');
+					$cls = (isset($items->sel) && $items->sel == "sel") ? ' ltabs-items-selected ltabs-items-loaded' : '';
+					$cls .= ($items->id == "*") ? ' items-category-all' : ' items-category-' . $items->id;
+					?>
+					<div class="ltabs-items <?php echo $cls; ?>">
+						<div class="ltabs-items-inner row <?php echo $cls_device . ' ';
+						echo $cls_animate; ?>">
+							<?php if (!empty($child_items)) {
+								
+									include('default_items.php');
+								
+							} else {
+								?>
+								<div class="ltabs-loading"></div>
+							<?php } ?>
+						</div>
+						<?php $classloaded = ($this->_getConfig('source_limit', 2) >= $items->count || $this->_getConfig('source_limit', 2) == 0) ? 'loaded' : ''; ?>
+										<div class="ltabs-loadmore"
+										     data-active-content=".items-category-<?php echo ($items->id == "*") ? 'all' : $items->id; ?>" 
+											 data-category-select="<?php echo $this->_getConfig('product_category');?>"  
+										     data-categoryid="<?php echo $items->id; ?>"
+										     data-rl_start="<?php echo $this->_getConfig('product_limitation', 2) ?>"
+										     data-rl_total="<?php echo $items->count ?>"
+										     data-rl_allready="
+											<?php echo $this->__('All ready'); ?>"
+																 data-ajaxurl="
+											<?php  echo Mage::getBaseUrl().'supercategories/index/ajax'; ?>" data-modid="
+											<?php echo $tag_id; ?>"
+																 data-rl_load="
+											<?php echo $this->_getConfig('source_limit', 2) ?>">
+											
+											<div data-cmspage-id="<?php echo $cms_id; ?>" title="<?php echo ($classloaded) ? $this->__('All ready') : $this->__('Load more'); ?>" class="ltabs-loadmore-btn <?php echo $classloaded ?>"
+																	 data-label="
+											<?php echo ($classloaded) ? $this->__('All ready') : $this->__('Load more'); ?>">
+												<span class="ltabs-image-loading"></span>
+											</div>
+										</div>
+					</div>
+				<?php } ?>
+			</div>
+			<!--End Items-->
+		</div>
+		<?php
+		$posttext = $this->_getConfig('posttext');
+		if (!empty($posttext)) {
+			?>
+			<div class="post-text"><?php echo $this->_getConfig('posttext'); ?></div>
+		<?php } ?>
+	</div>
+<?php
+} else {
+	echo 'Has no item to show!';
+} ?>
+
+
+

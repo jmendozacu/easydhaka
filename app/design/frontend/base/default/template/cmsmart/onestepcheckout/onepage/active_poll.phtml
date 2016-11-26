@@ -1,0 +1,23 @@
+<?php if(isset($poll)) : ?>
+<ul class="form-list onestepcheckout-poll">
+	<li class="control">	
+		<form id="onestepcheckout-poll" method="post">
+			<?php if( $poll_answers ): ?>
+				<div class="input-box">
+				<label for="is_subscribed"><?php echo $this->escapeHtml($poll->getPollTitle()); ?></label>
+				<select id="poll_vote" class="input-select" title="<?php echo $this->escapeHtml($poll->getPollTitle()) ?>" name="poll_vote">
+				<?php foreach( $poll_answers as $answer ): ?>
+					<option value="<?php echo $answer->getAnswerId() ?>"> <?php echo $this->escapeHtml($answer->getAnswerTitle()) ?></option>
+				<?php endforeach; ?>
+				</select>
+				<input type="hidden" value="<?php echo $poll->getId() ?>" name="poll_id" /> 
+				</div>
+				
+			<?php endif; ?>
+		</form>
+	</li>
+</ul>
+<?php endif; ?>
+
+
+

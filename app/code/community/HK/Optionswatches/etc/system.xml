@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+
+<config>
+    <sections>
+        <optionswatches translate="label" module="optionswatches">
+            <label>HK Optionswatches Settings</label>
+            <tab>general</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>1000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+			<groups>
+                <image translate="label">
+                    <comment><![CDATA[<br />
+                        <div class="box">
+                            <p>For info and support <a target="_blank" href="http://hkpatel201.blogspot.com/2015/01/product-custom-option-pro-with-optionswatch.html">Product Custom Option (Pro) with Option Swatches</a></p>
+                        </div>
+                        ]]>
+                    </comment>
+                    <label>Image Configure</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>1</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>  
+					 <fields>
+                                             <enabled>
+							<label>Enable on list page</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>1</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+							<comment>Enable Custom Option Swatches module on product list page</comment>
+					     </enabled>
+                                             <view_enabled>
+							<label>Enable on view page</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>2</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+							<comment>Enable Custom Option Swatches module on product details page</comment>
+					     </view_enabled>
+						<option_swatches translate="label comment">
+							<label>Custom Option Swatches</label>
+							<frontend_type>textarea</frontend_type>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+							<comment><![CDATA[
+								<p>Format: <em>[option label]</em> : <em>[option value]</em> = <em>[option image]</em></p>
+								<p>Example:</p>
+								<p>
+								Size : Small = small.png<br/>
+								Color : Red = red.png<br/>
+								</p>
+								<p>Swatch images should be uploaded in <strong>media/hk_option_swatches/</strong></p>
+								]]></comment>
+						</option_swatches>
+                    </fields>
+                </image>
+			</groups>
+        </optionswatches>
+    </sections>
+</config>

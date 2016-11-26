@@ -1,0 +1,17 @@
+<?php $_product = $this->getProduct();?>
+<?php $_acsp = ($this->helper('frontendconfigurableproductmatrix')->isAcspEnable() ? 'acsp/' : '');?>
+<?php if($this->helper('frontendconfigurableproductmatrix')->isEnable($_product) && $this->helper('frontendconfigurableproductmatrix')->isSecondMatrix($_product) != 1): $mPosition = $this->helper('frontendconfigurableproductmatrix')->getMatrixPosition($_product);?>
+	<?php if($mPosition != 2 && $this->helper('frontendconfigurableproductmatrix')->isShowFDD($_product) == 1):?>
+        <?php echo $this->setTemplate($_acsp.'catalog/product/view/type/options/configurable.phtml')->toHtml();?>
+    <?php elseif($mPosition == 0 && $this->helper('frontendconfigurableproductmatrix')->isShowFDD($_product) == 0):?>
+        <?php echo $this->getChildHtml('fmatrix');?>
+        <style type="text/css">.product-options-bottom .price-box,.product-options-bottom .add-to-cart label,.product-options-bottom .add-to-cart #qty{display:none;}</style>
+    <?php endif;?>
+    <?php if(($mPosition == 1 || $mPosition == 3) && $this->helper('frontendconfigurableproductmatrix')->isShowFDD($_product) == 0):?>
+    	<style type="text/css">#product-options-wrapper,.product-options-bottom{display:none;}</style>
+    <?php elseif($mPosition == 2):?>
+    	<style type="text/css">#product-options-wrapper,.product-options-bottom .price-box,.product-options-bottom .add-to-cart label,.product-options-bottom .add-to-cart #qty{display:none;} .product-shop .product-options-bottom{margin-top:10px; border:1px solid #e4e4e4;}</style>
+    <?php endif;?>
+<?php else:?>
+	<?php echo $this->setTemplate($_acsp.'catalog/product/view/type/options/configurable.phtml')->toHtml();?>
+<?php endif;?>

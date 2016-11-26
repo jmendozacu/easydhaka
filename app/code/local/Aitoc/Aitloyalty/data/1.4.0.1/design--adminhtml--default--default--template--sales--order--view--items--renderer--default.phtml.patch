@@ -1,0 +1,27 @@
+diff //dev2/sources/scraschuk/mg1510com/app/design/adminhtml/default/default/template/sales/order/view/items/renderer/default22.phtml //dev2/sources/scraschuk/mg1510com/app/design/adminhtml/default/default/template/sales/order/view/items/renderer/default.phtml
+--- //dev2/sources/scraschuk/mg1510com/app/design/adminhtml/default/default/template/sales/order/view/items/renderer/default.phtml	Wed Apr 27 12:28:42 2011
++++ //dev2/sources/scraschuk/mg1510com/app/design/adminhtml/default/default/template/sales/order/view/items/renderer/default2.phtml	Mon Apr 01 16:12:13 2013
+@@ -236,7 +236,23 @@
+     </td>
+     <td class="a-right"><?php echo $this->displayPriceAttribute('tax_amount') ?></td>
+     <td class="a-right"><?php echo $this->displayTaxPercent($_item) ?></td>
++    <?php /*	 
+     <td class="a-right"><?php echo $this->displayPriceAttribute('discount_amount') ?></td>
++    */ ?>
++    	 <? if (strpos($this->displayPriceAttribute('discount_amount'), '$0') > 0)
++            {
++                $newDiscount = $this->displayPriceAttribute('discount_amount');
++            }
++            else if (strpos($this->displayPriceAttribute('discount_amount'), '-') > 0)
++            {
++                $newDiscount = str_replace(array('>-$','[-'), array('>+$','[+'), $this->displayPriceAttribute('discount_amount'));
++            }
++            else
++            {
++                $newDiscount = str_replace(array('>$','['), array('>-$','[-'), $this->displayPriceAttribute('discount_amount'));
++            }
++        ?>
++    <td class="a-right"><?php echo $newDiscount ?></td>
+     <td class="a-right last">
+         <?php echo $this->displayPrices(
+             $_item->getBaseRowTotal() - $_item->getBaseDiscountAmount() + $_item->getBaseTaxAmount() + $_item->getBaseWeeeTaxAppliedRowAmount(),

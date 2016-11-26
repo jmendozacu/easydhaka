@@ -1,0 +1,175 @@
+/*==========BACKGROUND=============*/
+.background,
+#yt_header .header-content-right .header-cart,
+.button,
+#yt_header .yt-header-under,
+.btn-button-st,
+.service-top .i-con,
+.service-top-home-left .i-con,
+.owl-controls .owl-nav .owl-prev:hover,
+.owl-controls .owl-nav .owl-next:hover,
+.respl-item .sale-item,
+.three-title-home  > h2:before,
+.lastes-blog .btn-readmore,
+.carousel-dotted > li.active,
+.socials-wrap ul li a:hover,
+.respl-item  .add-to-links li a:hover,
+#yt_left .block .block-title strong:before, #yt_right .block .block-title strong:before,
+.block-layered-nav .currently ol li:hover,
+.toolbar .toolbar-inner .pagination-wrap .pagination .pages ol li a:hover,
+.yt-product-detail .yt-detail-right .add-to-links li a:hover,
+.blog-list-left .item-bl:hover .date-blog-left,
+#yt_wrapper .page-title.title-c h1:before,
+.owl-theme .owl-dots .owl-dot.active span, 
+.owl-theme .owl-dots .owl-dot:hover span,
+#confirmbox #btnavi li > #btccart,
+.sj-listing-tabs .ltabs-tabs-container .ltabs-tabs li.tab-sel,
+.sj-listing-tabs .ltabs-tabs-container .ltabs-tabs .ltabs-tab:hover,
+#checkoutSteps .active .step-title,
+.sj-listing-tabs .ltabs-tabs-container .ltabs-tabs-wrap.ltabs-selectbox span.ltabs-tab-selected,
+.mini-cartpro .block-title .c-item,
+.breadcrumbs li.note-br,
+.title-left-menu,
+.main-full .deal-block .title-deal > h2,
+.toolbar .toolbar-inner .pagination-wrap .pagination .pages ol li.current a,
+#yt-totop:hover{
+	background-color:#ff9100;
+}
+.block-tags .block-content .tags-list li a:hover{
+	background-color:#ff9100;
+	border-color:#ff9100;
+}
+/*==========BACKGROUND IMPORTANT=============*/
+.background_important,
+.sm-serachbox-pro .sm-searbox-content .form-button.button{
+	background-color:#ff9100!important;
+}
+/*==========COLOR=============*/
+.respl-item .price-box .regular-price,
+.respl-item .price-box .special-price .special-price,
+.yt-footer-middle .content-footer h3,
+.block-product .bs-content .regular-price,
+.client-bottom > a .color-client,
+.block-layered-nav .filter-wrapp dt,
+#layered-navigation .block-content .actions .clear-fillter,
+#yt_wrapper .page-title h1,
+.yt-product-detail .yt-detail-right .price-box .special-price .special-price,
+.yt-product-detail .yt-detail-right .price-box .regular-price .price,
+.client-info-about .name,
+.info-member .cl-name > a,
+.our-member .title-about-us > h2,
+#confirmbox #product-shop .special-price .special-price,
+#confirmbox #product-shop .regular-price,
+.discount > h2,
+.shipping > h2,
+.sj-listing-tabs .ltabs-items .ltabs-loadmore .ltabs-loadmore-btn,
+.block-popup-login .button-reg,
+.block-account .block-content .current a,
+#yt_resmenu_collapse ul.nav-menu > li.active > a > span,
+.sm_megamenu_wrapper_vertical_menu .sm_megamenu_menu > li.parent-item:hover > a:after,
+.sm_megamenu_wrapper_vertical_menu .sm_megamenu_menu > li:hover > a,
+.mini-cartpro .block-content .bottom-action .price-total .price-total-w .price,
+.products-list .respl-item .link-learn,
+.sj-listing-tabs .ltabs-items   .ltabs-loadmore .ltabs-loadmore-btn .ltabs-image-loading:before,
+.toolbar .select-inner > ul li a.selected ,
+.dropdown-setting .block-currency ul li a.selected,
+.language-switcher  ul li a.selected {
+	color:#ff9100;
+}
+/*==========BORDER=============*/
+.body,
+.dropdown-setting .block-currency .jqTransformSelectWrapper ul li a:hover,
+.yt-product-detail .jCarouselLite .cloud-zoom-gallery.actived > img,
+.yt-product-detail .jCarouselLite .cloud-zoom-gallery > img:hover,
+.dropdown-setting .block-currency ul li a.selected{
+	border:1px solid #ff9100;
+}
+.main-full .ltabs-loadmore{
+	border:1px solid #ff9100!important;
+}
+.main-full .sj-listing-tabs .ltabs-tabs-container .ltabs-tabs{
+	border-bottom:1px solid #ff9100!important;
+}
+#nav li ul li:hover > a{
+	border-left:3px solid #ff9100;
+}
+.yt-product-detail .tab-product-detail .yt-tab-content{
+	border-top:2px solid #ff9100;
+}
+.quickly-to .list-item-quick li.ql-item{
+	border-left:1px solid #ff9100;
+	border-top:1px solid #ff9100;
+	border-bottom:1px solid #ff9100;
+}
+.quickly-to .list-item-quick li.ql-item span:before{
+	background:url(../../images/orange/right-quickly-to.png) no-repeat right top;
+}
+.deal-block .title-deal h2{
+	border: double #ff9100;
+}
+.sj-listing-tabs .ltabs-items   .ltabs-loadmore .ltabs-loadmore-btn {
+	background:url(../../images/orange/add.png) no-repeat right center;
+}
+.category-wrap-cat .owl-item:hover{
+	background:url(../../images/orange/bg-super-cat.png) repeat-x bottom left;
+}
+/*==========BORDER + BACKGROUND=============*/
+.yt-product-detail .more-view-wrapper .prev:hover,
+.yt-product-detail .more-view-wrapper .next:hover,
+.yt-tab-navi > li.active,
+.yt-tab-navi > li:hover,
+.yt-tab-navi > li.tab-sel{
+	background-color:#ff9100;
+	border-color:#ff9100;
+}
+
+.why-list li:before{
+	background-image:url(../../images/orange/icon-whylist.png);
+}
+.tab-product-ex .yt-tab-navi > li > a:before{
+	color:#ff9100;
+}
+.respl-item .item-time .icon-timer{
+	background-image:url(../../images/orange/icon-timer.png);
+}
+.service-top .i-con > a:before{
+	color: #ff9100;
+}
+.shop-info .info-list > li:before{
+	color: #ff9100;
+}
+
+.breadcrumbs li.note-br > span:before{
+	background-image:url(../../images/orange/are-here-br.png);
+}
+.main-full .deal-block .title-deal > h2:before{
+	background-image:url(../../images/orange/mc-title-deal.png);
+}
+/*************************************************************************************************************************************/
+.sm_megamenu_wrapper_horizontal_menu .sm_megamenu_menu  li.sm_megamenu_lv1:hover > a,
+.sm_megamenu_wrapper_horizontal_menu .sm_megamenu_menu li.sm_megamenu_actived > a.sm_megamenu_head,
+#nav > li:hover > a, #nav > li.active > a,
+.yt-slideshow .btn_slide a,
+.tp-bullets.simplebullets.round .bullet,
+.lastes-blog .btn-readmore:hover,
+.block-layered-nav .currently ol li .btn-remove:hover,
+.sj-listing-tabs .ltabs-tabs-container .ltabs-tabs-wrap.ltabs-selectbox span.ltabs-tab-arrow,
+.cms-index-index .layout-g2shop-parent > a{
+	background-color:#ffb400;
+}
+.respl-item .view-detail,
+.sm_quickview_handler{
+	background-color:rgba(225,145,0,0.9);
+}
+@media (min-width: 768px) and (max-width: 991px) {
+	#yt_header .header-content-right .header-cart{
+		background-color:#ffb400 !important
+	}
+}
+@media (max-width: 767px) {
+	#yt_header .header-content-right .header-cart,
+	.sm-serachbox-pro,
+	.yt-responsivemenu .link-mobile{
+		background-color:#ffb400
+	}
+}

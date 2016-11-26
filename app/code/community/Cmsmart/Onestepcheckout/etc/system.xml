@@ -1,0 +1,226 @@
+<?xml version="1.0"?>
+<config>
+    <tabs>
+        <cmsmart_tab>
+            <label>Cmsmart Extensions</label>
+            <sort_order>1</sort_order>
+            <class>cmsmart-block</class>
+        </cmsmart_tab>
+    </tabs>
+    <sections>
+        <onestepcheckout translate="label" module="contacts">
+            <label>One Step Checkout</label>
+            <tab>cmsmart_tab</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>100</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <global translate="label">
+                    <label>General Setting</label>
+                    <sort_order>5</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <info>
+                            <label>Version</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <frontend_model>onestepcheckout/system_config_form_fieldset_extensions
+                            </frontend_model>
+                        </info>
+                        <status>
+                            <label>Enable module</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>required-entry</validate>
+                        </status>
+                        <title translate="label">
+                            <label>Title page</label>
+                            <frontend_type>text</frontend_type>
+                            <isrequired>true</isrequired>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </title>
+                         <style_layout>
+                            <label>Select style layout</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>onestepcheckout/system_config_source_stylelayout</source_model>
+                            <isrequired>true</isrequired>
+                            <sort_order>21</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </style_layout> 
+                    </fields>
+                </global>
+
+                <default translate="label">
+                    <label>Default Settings</label>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <expanded>0</expanded>
+                    <fields>
+                        <payment translate="label">
+                            <label>Default payment method</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_payment_allmethods</source_model>
+                            <isrequired>true</isrequired>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </payment>
+
+                        <subscribe>
+                            <label>Show subscribe to newsletter</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <isrequired>true</isrequired>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </subscribe>
+
+                        <show_shipping>
+                            <label>Show shipping address form</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <isrequired>true</isrequired>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </show_shipping>
+
+
+                        <comment>
+                            <label>Show comment field</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <isrequired>true</isrequired>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </comment>
+
+                    </fields>
+                </default>
+
+                <geo>
+                    <label>GEO ip</label>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <country>
+                            <label>Enable country detection</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <isrequired>true</isrequired>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </country>
+                        <country_file translate="label comment">
+                            <label>GeoIp file name</label>
+                            <comment><![CDATA[File name in folder'MAGETO_ROOT/lib/MaxMind/GeoIP/data' default: GeoIP.dat]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </country_file>
+                        <city>
+                            <label>Enable City Detection</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <isrequired>true</isrequired>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </city>
+                        <city_file translate="label comment">
+                            <label>GeoCity file name</label>
+                            <comment><![CDATA[File name in folder'MAGETO_ROOT/lib/MaxMind/GeoIP/data' default: GeoLiteCity.dat]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </city_file>
+                    </fields>
+                </geo>
+
+                <cmsmartdeliverydate>
+                    <label>Delivery Settings</label>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <delivery_enable>
+                            <label>Enable Delivery</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <isrequired>true</isrequired>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </delivery_enable>
+                        <asa_option>
+                            <label>Show As soon as possible option</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <isrequired>true</isrequired>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </asa_option>
+                        <weekend_option>
+                            <label> Weekend Days (no delivery)</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>adminhtml/system_config_source_locale_weekdays</source_model>
+                            <isrequired>true</isrequired>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+							<can_be_empty>1</can_be_empty>
+                        </weekend_option>
+                        <disableday_option>
+                            <label>National Holidays (no delivery)</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Enter off-shipping days with the format (mm/dd/yyyy), comma separated and no spaces]]></comment>
+                        </disableday_option>					
+                    </fields>
+                </cmsmartdeliverydate>
+            </groups>
+        </onestepcheckout>
+    </sections>
+</config>

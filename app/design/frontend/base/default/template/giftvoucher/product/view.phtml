@@ -1,0 +1,316 @@
+<?php
+/**
+ * Gift Voucher View Product template
+ */
+?>
+<?php
+$_product = $this->getProduct();
+$_giftAmount = $this->getGiftAmount($_product);
+$_formData = $this->getFormConfigData();
+// echo $this->getPriceHtml($_product); //Hai.Tran
+?>
+<div class="price-box">
+    <span class="regular-price">
+        <span class="price" id="giftcard-product-price">
+        </span>
+    </span>
+</div>
+<div id="giftcard-product-amount-media" style="display: none"></div> 
+<input type="hidden" name="price_amount" id="price_amount" value="0" />
+<script type="text/javascript">
+    var giftmedia = new Array('giftcard-template-back', 'giftcard-template-top', 'giftcard-template-left');
+    var giftAmountChange = <?php echo Mage::helper('core')->jsonEncode($_giftAmount) ?>; //Hai.Tran
+    giftCardPriceFomat = <?php echo $this->getPriceFormatJs() ?>;
+    function changePriceMediaGiftcard(value) {
+        for (i = 0; i < 3; i++)
+            if ($(giftmedia[i]))
+                $(giftmedia[i]).down('.giftcard-price-change').innerHTML = value;
+    }
+</script>
+<script type="text/javascript">
+//<![CDATA[
+    Event.observe(window, 'load', function() {
+		if ($$('.product-shop')[0].down('.price-info'))
+			$$('.product-shop')[0].down('.price-info').setStyle({'display':'none'});
+        changePriceMediaGiftcard($('giftcard-product-amount-media').innerHTML);
+        changeSenderName($('customer_name'));
+        changeReceiverName($('recipient_name'));
+        changeRemaining($('message'));
+    });
+//]]>
+</script>
+<div class="giftvoucher-product-info">
+    <?php if ($_giftAmount['type'] == 'range'): ?>
+        <p></p><p>
+            <?php
+            $includeTax = ( Mage::getStoreConfig('tax/display/type') != 1 );
+            $rateTax = Mage::helper('tax')->getPrice($_product, 100, $includeTax) / 100;
+            ?>
+            <label for="amount_range"><div style="float: left; width:100px"><?php echo $this->__('Enter value:') ?></div></label>
+            <input id="amount_range" name="amount" class="input-text required-entry validate-greater-than-zero" onchange="validateInputRange(this);" value="<?php echo $_formData->getAmount() ?>" />
+            (<span class="price"><?php echo $_giftAmount['from_txt'] ?></span> -  <span class="price"><?php echo $_giftAmount['to_txt'] ?></span>)
+            <script type="text/javascript">
+                //<![CDATA[
+                var rateTax = <?php echo $rateTax ?>;
+                if (!$('amount_range').value)
+                    $('amount_range').value = <?php echo $_giftAmount['from'] ?>;
+                function validateInputRange(el) {
+                    var gift_amount_min = <?php echo $_giftAmount['from'] ?>;
+                    var gift_amount_max = <?php echo $_giftAmount['to'] ?>;
+                    if (el.value < gift_amount_min)
+                        el.value = gift_amount_min;
+                    if (el.value > gift_amount_max)
+                        el.value = gift_amount_max;
+
+                    changePriceByInput(el.value);
+                }
+                changePriceByInput($('amount_range').value);
+                function changePriceByInput(value) {
+                    if (giftAmountChange.gift_price_type == 'percent') {
+                        $('giftcard-product-price').innerHTML = formatCurrency(value * giftAmountChange.gift_price_options / 100 * rateTax, giftCardPriceFomat);
+                        $('price_amount').value = value * giftAmountChange.gift_price_options / 100 * rateTax;
+                    } else {
+                        $('giftcard-product-price').innerHTML = formatCurrency(value * rateTax, giftCardPriceFomat);
+                        $('price_amount').value = value * rateTax;
+                    }
+                    $('giftcard-product-amount-media').innerHTML = formatCurrency(value, giftCardPriceFomat);
+                    changePriceMediaGiftcard($('giftcard-product-amount-media').innerHTML);
+                }
+                //]]>
+            </script>
+        </p>
+    <?php elseif ($_giftAmount['type'] == 'dropdown'): ?>
+        <p></p><p>
+            <label for="amount_dropdown"><div style="float: left; width:100px"><?php echo $this->__('Select value:') ?></div></label>
+            <select id="amount_dropdown" name="amount" class="required-entry select" onchange="changePriceByInputDropdown(this)">
+                <?php $options = array_combine($_giftAmount['options'], $_giftAmount['options_txt']) ?>
+                <?php foreach ($options as $value => $label): ?>
+                    <option value="<?php echo $value ?>" <?php if ($value == $_formData->getAmount()) echo 'selected' ?> ><?php echo $label ?></option>
+                <?php endforeach ?>
+            </select>
+            <script type="text/javascript">
+                //<![CDATA[
+                function changePriceByInputDropdown(el) {
+                    $('giftcard-product-price').innerHTML = formatCurrency(giftAmountChange.prices[el.value], giftCardPriceFomat);
+                    $('price_amount').value = giftAmountChange.prices[el.value];
+                    $('giftcard-product-amount-media').innerHTML = el.options[el.selectedIndex].text;
+                    changePriceMediaGiftcard($('giftcard-product-amount-media').innerHTML);
+                }
+                changePriceByInputDropdown($('amount_dropdown'));
+                //]]>
+            </script>
+        </p>
+    <?php elseif ($_giftAmount['type'] == 'static'): ?>
+        <p></p><p>
+            <?php echo $this->__('Gift Card value: <span class="regular-price">%s</span>', $_giftAmount['value_txt']) ?>
+            <input type="hidden" name="amount" value="<?php echo $_giftAmount['value'] ?>" />
+            <script type="text/javascript">
+                //<![CDATA[
+                $('price_amount').value = giftAmountChange.price;
+                $('giftcard-product-price').innerHTML = formatCurrency(giftAmountChange.price, giftCardPriceFomat);
+                $('giftcard-product-amount-media').innerHTML = '<?php echo $_giftAmount['value_txt'] ?>';
+                //]]>
+            </script>
+        </p>
+    <?php endif ?>
+    <?php echo $this->getChildHtml('giftcard.product.selecttemplate') ?>
+        <p class = "giftcard-send-friend">
+        <input type="checkbox" value="1" name="send_friend" id="send_friend" onclick="sendFriend(this);" <?php if ($_formData->getSendFriend()) echo 'checked' ?> />
+        <label for="send_friend"><?php echo $this->__('Send Gift Card to friend') ?></label>
+        <script type="text/javascript">
+            //<![CDATA[
+            function sendFriend(el) {
+                var receiver = $('giftvoucher-receiver');
+                if (el.checked) {
+                    if (receiver)
+                        receiver.show();
+                    for (i = 0; i < 3; i++)
+                        if ($(giftmedia[i])) {
+                            $(giftmedia[i]).down('.giftcard-custom-message').innerHTML = $('message').value;
+                            $(giftmedia[i]).down('.giftcard-send-to').innerHTML = $('recipient_name').value;
+                            if($('customer_name').value) $(giftmedia[i]).down('.giftcard-send-from').innerHTML = $('customer_name').value;
+                            else $(giftmedia[i]).down('.giftcard-send-from').innerHTML = '<?php echo Mage::helper('customer')->isLoggedIn() ? Mage::helper('customer')->getCustomerName() : ''; ?>';
+                        }
+                } else {
+                    if (receiver)
+                        receiver.hide();
+                    for (i = 0; i < 3; i++)
+                        if ($(giftmedia[i])) {
+                            $(giftmedia[i]).down('.giftcard-custom-message').innerHTML = '';
+                            $(giftmedia[i]).down('.giftcard-send-to').innerHTML = '';
+                            //$(giftmedia[i]).down('.giftcard-send-from').innerHTML = '';
+                            $(giftmedia[i]).down('.giftcard-send-from').innerHTML = '<?php echo Mage::helper('customer')->isLoggedIn() ? Mage::helper('customer')->getCustomerName() : ''; ?>';
+                        }
+                }
+            }
+            //]]>
+        </script>
+    </p>
+    <div class="giftvoucher-receiver" id="giftvoucher-receiver" style="<?php if (!$_formData->getSendFriend()) echo 'display:none;' ?>">
+        <p>
+            <label for="customer_name"><?php echo $this->__('Sender name (optional):') ?></label><br />
+            <input type="text" class="input-text" name="customer_name" id="customer_name" value="<?php echo $_formData->getCustomerName() ?>" onchange="changeSenderName(this);" maxlength="30"/>
+        </p>
+        <p>
+            <label for="recipient_name"><?php echo $this->__('Recipient name:') ?></label><br />
+            <input type="text" class="input-text required-entry" name="recipient_name" id="recipient_name" value="<?php echo $_formData->getRecipientName() ?>"  onchange="changeReceiverName(this);" maxlength="30"/>
+        </p>
+        <p>
+            <label class = "recipient_email" for="recipient_email"><?php echo $this->__('Recipient email address:') ?></label><br />
+            <input type="text" class="input-text required-entry validate-email validate-same-email" name="recipient_email" id="recipient_email" value="<?php echo $_formData->getRecipientEmail() ?>" />
+        </p>
+        <?php if ($this->enablePhysicalMail()): ?>
+            <p class = "recipient_ship_form">
+                <input type="checkbox" value="<?php echo $this->__('Yes') ?>" name="recipient_ship" id="recipient_ship" onclick="shipToFriend(this);" <?php if ($_formData->getRecipientShip()) echo 'checked' ?> />
+                <label class = "recipient_ship" for="recipient_ship"><?php echo $this->__('Send through post office') ?></label>
+                <!--                        Hai.Tran-->
+            <p id="recipient_ship_desc" style = "float: left;clear: both;">
+                <?php
+                if (Mage::helper('giftvoucher')->getInterfaceConfig('postoffice_date'))
+                    echo $this->__("You need to fill in your friend's address as the shipping address on checkout page. We will send this Gift Card to that address after at least %s day(s).", Mage::helper('giftvoucher')->getInterfaceConfig('postoffice_date'));
+                else
+                    echo $this->__("You need to fill in your friend's address as the shipping address on checkout page. We will send this Gift Card to that address.");
+                ?>
+            </p>
+            <p id="postal_address" style="display:none;">
+                <label for="recipient_address"><?php echo $this->__('Postal Address:') ?></label><br />
+                <textarea name="recipient_address" id="recipient_address"></textarea>
+            </p>
+            <script type="text/javascript">
+                //<![CDATA[
+                function shipToFriend(el) {
+                    if (el.checked) {
+    <?php if (!Mage::helper('giftvoucher')->getEmailConfig('send_with_ship')): ?>
+                            $('recipient_email').removeClassName('required-entry');
+    <?php endif; ?>
+                        $('recipient_ship_desc').show();
+                        // $('postal_address').show();
+                    } else {
+                        $('recipient_email').addClassName('required-entry');
+                        $('recipient_ship_desc').hide();
+                        // $('postal_address').hide();
+                    }
+                }
+                shipToFriend($('recipient_ship'));
+                //]]>
+            </script>
+            </p>
+        <?php endif ?>
+        <?php //if ($this->enableCustomMessage()):   ?>
+        <p>
+            <label class = "message" for="message"><?php echo $this->__('Custom message') ?></label><br />
+            <textarea maxlength="<?php echo $this->messageMaxLen(); ?>" name="message" id="message" class="" onchange="changeRemaining(this);" onkeyup="changeRemaining(this);"><?php echo $_formData->getMessage() ?></textarea><br />
+            <small><?php echo $this->__('Characters Remaining: ') ?><span id="giftvoucher_char_remaining"><?php echo $this->messageMaxLen() ?></span></small>
+            <script type="text/javascript">
+                //<![CDATA[
+                var remaining_max = <?php echo $this->messageMaxLen() ?>;
+                function changeRemaining(el) {
+                    if (el.value.length > remaining_max) {
+                        el.value = el.value.substring(0, remaining_max);
+                    }
+                    $('giftvoucher_char_remaining').innerHTML = remaining_max - el.value.length;
+                    for (i = 0; i < 3; i++)
+                        if ($(giftmedia[i]))
+                            $(giftmedia[i]).down('.giftcard-custom-message').innerHTML = el.value;
+                }
+                function changeSenderName(el) {
+                    for (i = 0; i < 3; i++)
+                        if ($(giftmedia[i]))
+                            if(el.value) $(giftmedia[i]).down('.giftcard-send-from').innerHTML = el.value;
+                            else $(giftmedia[i]).down('.giftcard-send-from').innerHTML = '<?php echo Mage::helper('customer')->isLoggedIn() ? Mage::helper('customer')->getCustomerName() : ''; ?>';
+                }
+                function changeReceiverName(el) {
+                    for (i = 0; i < 3; i++)
+                        if ($(giftmedia[i]))
+                            $(giftmedia[i]).down('.giftcard-send-to').innerHTML = el.value;
+                }
+
+                same_email = '<?php echo $this->__('You can not send giftcard for yourselve.') ?>';
+                Validation.add('validate-same-email', same_email, function(v) {
+                    if (Validation.get('validate-email').test(v)) {
+                        if (v === '<?php echo Mage::getSingleton('customer/session')->getCustomer()->getEmail() ?>')
+                            return false;
+                    }
+                    return true;
+                });
+                //]]>
+            </script>
+        </p>
+        <?php //endif  ?>
+        <p>
+            <?php
+            if (Mage::app()->getRequest()->getControllerName() == 'cart') {
+                if ($_formData->getNotifySuccess())
+                    $checkboxNotify = true;
+                else
+                    $checkboxNotify = false;
+            } else
+                $checkboxNotify = true;
+            ?>
+            <input type="checkbox" value="1" name="notify_success" id="notify_success" <?php if ($checkboxNotify) echo 'checked' ?> />
+            <label for="notify_success"><?php echo $this->__('Get notification email when your friend receives Gift Card') ?></label>
+        </p>
+<?php if ($this->enableScheduleSend()): ?>
+    <?php echo $this->getLayout()->createBlock('core/html_calendar')->setTemplate('page/js/calendar.phtml')->toHtml() ?>
+        <p class = "giftcard-date-box"style="width: 200px; float: left">
+                <label for="day_to_send"><?php echo $this->__('Day to send') ?></label><br />
+                <img src="<?php echo Mage::getBaseUrl('skin') ?>/adminhtml/default/default/images/grid-cal.gif" alt="<?php echo $this->__('Select Date') ?>" class="v-middle" id="calendar-day_to_send" />
+                <input type="text" class="input-text required-entry validate-date validate-date-giftcard" name="day_to_send" id="day_to_send" value="<?php echo $_formData->getDayToSend() ?>" style="float: left; margin-right: 3px"/>
+            </p>
+            <script type="text/javascript">
+                //<![CDATA[
+                Calendar.setup({
+                    inputField: "day_to_send",
+                    ifFormat: "%m/%e/%Y",
+                    showsTime: false,
+                    button: "calendar-day_to_send",
+                    align: "Bl",
+                    singleClick: true,
+                    disableFunc: function(date) {
+                        var today_date = new Date();
+                        today_date.setHours(0);
+                        today_date.setMinutes(0);
+                        today_date.setSeconds(0);
+                        today_date.setMilliseconds(0);
+                        if (date < today_date)
+                            return true;
+                        return false;
+                    }
+                });
+                //Hai.Tran
+                day_to_send_error = '<?php echo $this->__('We cannot send this giftcard in the past.') ?>';
+                Validation.add('validate-date-giftcard', day_to_send_error, function(v) {
+                    if (Validation.get('validate-date').test(v)) {
+                        var test = new Date(v);
+                        var today = getTodayDate();
+                        if (test < today)
+                            return false;
+                    }
+                    return true;
+                });
+                function getTodayDate() {
+                    todayDate = new Date();
+                    todayDate.setHours(0);
+                    todayDate.setMinutes(0);
+                    todayDate.setSeconds(0);
+                    todayDate.setMilliseconds(0);
+                    return todayDate;
+                }
+                //]]>
+            </script>
+            <style>
+                #giftcard-preview-button-add{
+                    margin-top: 18px;
+                }
+            </style>
+<?php endif ?>
+    <?php
+    $templates = Mage::getBlockSingleton('giftvoucher/product_view')->getAvailableTemplate();
+    if(count($templates)):
+    ?>
+    <button type="button" title="Preview template" id="giftcard-preview-button-add" class="button btn-cart" onclick="getPreview()" style="float: right"><span style="background-image: url(<?php echo $this->getSkinUrl() . 'images/giftvoucher/preview-icon.png' ?>); background-repeat: no-repeat;background-size: contain; padding-left: 20px;"><span><?php echo $this->__('Preview Gift Card') ?></span></span></button>
+    <?php endif; ?>
+    <div style="clear: both"></div>
+    </div>
+    <p></p>
+</div>

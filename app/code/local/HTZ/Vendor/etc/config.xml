@@ -1,0 +1,238 @@
+<?xml version="1.0" ?>
+<config>
+	<modules>
+		<HTZ_Vendor>
+			<version>0.1.1</version>		
+		</HTZ_Vendor>
+	</modules>
+	<frontend>
+		<routers>	
+			<vendor>
+				<use>standard</use>
+				<args>
+					<module>HTZ_Vendor</module>
+					<frontName>vendor</frontName>
+				</args>
+			</vendor>			
+		</routers>
+		<layout>
+			<updates>
+				<vendor>
+					<file>vendor/vendor.xml</file>
+				</vendor>
+			</updates>
+		</layout>
+	</frontend>
+	<admin>
+		<routers>	
+			<adminhtml>
+				<args>
+					<modules>
+						<HTZ_Vendor before="Mage_Adminhtml">HTZ_Vendor_Adminhtml</HTZ_Vendor>
+					</modules>
+				</args>
+			</adminhtml>
+		</routers>		
+	</admin>
+	<global>
+		<events>			
+			<sales_order_place_after>
+				<observers>
+					<vendor_sales_order>
+						<type>singleton</type>
+						<class>HTZ_Vendor_Model_Observer</class>
+						<method>addOrderItem</method>
+					</vendor_sales_order>
+				</observers>				
+			</sales_order_place_after>
+			<admin_session_user_login_success>
+				<observers>
+					<vendor_session_user_login_success>
+						<type>singleton</type>
+						<class>HTZ_Vendor_Model_Observer</class>
+						<method>login</method>
+					</vendor_session_user_login_success>
+				</observers>
+			</admin_session_user_login_success>
+		</events>
+		<helpers>
+            <vendor>
+                <class>HTZ_Vendor_Helper</class>
+            </vendor>			
+        </helpers>        
+		<blocks>
+			<adminhtml>
+				<rewrite>
+					<permissions_user_grid>HTZ_Vendor_Block_Adminhtml_Permissions_User_Grid</permissions_user_grid>
+					<permissions_user_edit_tabs>HTZ_Vendor_Block_Adminhtml_Permissions_User_Edit_Tabs</permissions_user_edit_tabs>
+					<permissions_user_edit_tab_main>HTZ_Vendor_Block_Adminhtml_Permissions_User_Edit_Tab_Main</permissions_user_edit_tab_main>
+					<permissions_user_edit_tab_store>HTZ_Vendor_Block_Adminhtml_Permissions_User_Edit_Tab_Store</permissions_user_edit_tab_store>
+					<permissions_user_edit_tab_category>HTZ_Vendor_Block_Adminhtml_Permissions_User_Edit_Tab_Category</permissions_user_edit_tab_category>
+					<catalog_product_grid>HTZ_Vendor_Block_Adminhtml_Catalog_Product_Grid</catalog_product_grid>
+					<sales_order_shipment_view>HTZ_Vendor_Block_Adminhtml_Sales_Order_Shipment_View</sales_order_shipment_view>
+					<sales_order_grid>HTZ_Vendor_Block_Adminhtml_Sales_Order_Grid</sales_order_grid>
+					<sales_invoice_grid>HTZ_Vendor_Block_Adminhtml_Sales_Invoice_Grid</sales_invoice_grid>
+					<sales_shipment_grid>HTZ_Vendor_Block_Adminhtml_Sales_Shipment_Grid</sales_shipment_grid>
+					<sales_creditmemo_grid>HTZ_Vendor_Block_Adminhtml_Sales_Creditmemo_Grid</sales_creditmemo_grid>
+					<permissions_user_edit_tab_roles>HTZ_Vendor_Block_Adminhtml_Permissions_User_Edit_Tab_Roles</permissions_user_edit_tab_roles>
+					<permissions_buttons>HTZ_Vendor_Block_Adminhtml_Permissions_Buttons</permissions_buttons>
+					<catalog_category_tree>HTZ_Vendor_Block_Adminhtml_Catalog_Category_Tree</catalog_category_tree>
+					<store_switcher>HTZ_Vendor_Block_Adminhtml_Store_Switcher</store_switcher>
+					<catalog_category_tabs>HTZ_Vendor_Block_Adminhtml_Catalog_Category_Tabs</catalog_category_tabs>
+					<catalog_category_tab_vendor>HTZ_Vendor_Block_Adminhtml_Catalog_Category_Tab_Vendor</catalog_category_tab_vendor>
+					<catalog_category_edit_form>HTZ_Vendor_Block_Adminhtml_Catalog_Category_Edit_Form</catalog_category_edit_form>
+					<catalog_product_attribute_edit>HTZ_Vendor_Block_Adminhtml_Catalog_Product_Attribute_Edit</catalog_product_attribute_edit>
+					<catalog_product_edit_tab_websites>HTZ_Vendor_Block_Adminhtml_Catalog_Product_Edit_Tab_Websites</catalog_product_edit_tab_websites>
+					<system_account_edit_form>HTZ_Vendor_Block_Adminhtml_System_Account_Edit_Form</system_account_edit_form>
+					<catalog_form_renderer_fieldset_element>HTZ_Vendor_Block_Adminhtml_Catalog_Form_Renderer_Fieldset_Element</catalog_form_renderer_fieldset_element>
+					<widget_grid_column_filter_store>HTZ_Vendor_Block_Adminhtml_Widget_Grid_Column_Filter_Store</widget_grid_column_filter_store>
+				</rewrite>
+			</adminhtml>
+			<catalog>	
+				<rewrite>
+					<product_list>HTZ_Vendor_Block_Catalog_Product_List</product_list>
+				</rewrite>
+			</catalog>
+			<vendor>
+				<class>HTZ_Vendor_Block</class>
+			</vendor>
+		</blocks>		
+		<models>
+			<sales>	
+				<rewrite>
+					<order>HTZ_Vendor_Model_Sales_Order</order>
+					<order_invoice>HTZ_Vendor_Model_Sales_Order_Invoice</order_invoice>
+					<order_shipment>HTZ_Vendor_Model_Sales_Order_Shipment</order_shipment>
+					<order_creditmemo>HTZ_Vendor_Model_Sales_Order_Creditmemo</order_creditmemo>
+				</rewrite>
+			</sales>
+			<vendor>
+				<class>HTZ_Vendor_Model</class>
+				<resourceModel>vendor_mysql4</resourceModel>
+			</vendor>
+			<vendor_mysql4>
+				<class>HTZ_Vendor_Model_Mysql4</class>
+				<entities>
+					<vendor>
+						<table>htz_vendor_sales_order_item</table>
+					</vendor>					
+				</entities>
+			</vendor_mysql4>
+		</models>
+		<resources>	
+			<vendor_setup>
+				<setup>
+					<module>HTZ_Vendor</module>
+				</setup>
+				<connection>
+					<use>core_setup</use>
+				</connection>
+			</vendor_setup>
+			<vendor_write>
+				<connection>
+					<use>core_write</use>
+				</connection>
+			</vendor_write>
+			<vendor_read>
+				<connection>
+					<use>core_read</use>
+				</connection>
+			</vendor_read>
+		</resources>
+		<template>
+			<email>
+				<htz_vendor_active module="vendor">
+					<label>Vendor account active</label>
+					<file>htz/htz_vendor_active.html</file>
+					<type>html</type>
+				</htz_vendor_active>
+				<htz_vendor_registration module="vendor">
+					<label>Vendor registration</label>
+					<file>htz/htz_vendor_registration.html</file>
+					<type>html</type>
+				</htz_vendor_registration>
+				<htz_vendor_registration_admin module="vendor">
+					<label>Vendor registration</label>
+					<file>htz/htz_vendor_registration_admin.html</file>
+					<type>html</type>
+				</htz_vendor_registration_admin>
+			</email>
+		</template>
+	</global>
+	<adminhtml>		
+		<layout>
+			<updates>
+				<htz_vendor>
+					<file>vendor/vendor.xml</file>
+				</htz_vendor>
+			</updates>
+		</layout>
+		<menu>
+			<vendor module="vendor">
+				<title>Vendor</title>
+				<sort_order>0</sort_order>               
+				<children>
+					<settings module="vendor">
+						<title>Manage Settings</title>
+						<sort_order>1</sort_order>
+						<action>adminhtml/system_config/edit/section/vendor/</action>
+					</settings>
+					<manage module="vendor">
+						<title>Manage Users</title>
+						<sort_order>2</sort_order>
+						<action>adminhtml/permissions_user/index/</action>
+					</manage>
+					<info module="vendor">
+						<title>Manage Information</title>
+						<sort_order>3</sort_order>
+						<action>adminhtml/system_account/index/</action>
+					</info>
+				</children>
+			</vendor>
+		</menu>		
+	   <acl>
+            <resources>
+                <admin>
+                    <children>
+						<vendor translate="title" module="vendor">
+							<title>Vendor Menu</title>
+							<sort_order>1</sort_order>	
+							<children>
+								<settings translate="title" module="vendor">
+									<title>Manage Settings</title>
+									<sort_order>1</sort_order>
+								</settings>
+								<manage translate="title" module="vendor">
+									<title>Manage Vendor</title>
+									<sort_order>2</sort_order>
+								</manage>
+								<info translate="title" module="vendor">
+									<title>Manage Information</title>
+									<sort_order>3</sort_order>
+								</info>								
+							</children>							
+						</vendor>
+                        <system>
+                            <children>
+                                <config>
+                                    <children>
+                                        <vendor translate="title" module="vendor">
+                                            <title>Vendor</title>
+											<sort_order>1</sort_order>
+											<children>
+												<settings translate="title" module="vendor">
+													<title>Manage Settings</title>
+													<sort_order>1</sort_order>
+												</settings>
+											</children>
+                                        </vendor>
+                                    </children>
+                                </config>
+                            </children>
+                        </system>
+                    </children>
+                </admin>
+            </resources>
+        </acl>	
+	</adminhtml>		
+</config>

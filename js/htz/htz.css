@@ -1,0 +1,160 @@
+.user_store_list {
+    background: none repeat scroll 0 0 #fafafa;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 11px 15px 0 #bdbdbd;
+	font-size: 16px;
+    padding: 20px 50px;
+	margin-top: 5px;
+}
+.user_website{
+    background: none repeat scroll 0 0 #2e2e2e;
+    border-radius: 25px;
+    box-shadow: 0 0 5px 0 #000;
+    float: left;
+    height: 25px;
+    margin: 5px 10px;
+    width: 25px;
+}
+.user_group{
+    background: none repeat scroll 0 0 #FE2E2E;
+    border-radius: 25px;
+    box-shadow: 0 0 5px 0 #FE2E2E;
+    float: left;
+    height: 25px;
+    margin: 5px 10px;
+    width: 25px;
+}
+.user_store{
+    background: none repeat scroll 0 0 #013ADF;
+    border-radius: 25px;
+    box-shadow: 0 0 5px 0 #013ADF;
+    float: left;
+    height: 25px;
+    margin: 5px 10px;
+    width: 25px;
+}
+.user_label{
+	float: left;
+    margin-top: 10px;
+}
+.user_store_list .web{
+	background: none repeat scroll 0 0 #2e2e2e;
+    border-radius: 10px;
+    padding:10px;
+	width:50%;
+	box-shadow: 0 0 5px 0 #2e2e2e;
+	color:#fff;
+}
+.user_store_list .grp{
+	background: none repeat scroll 0 0 #FE2E2E;
+    border-radius: 10px;
+    padding:10px;
+	width:50%;
+	margin-left:50px;
+	box-shadow: 0 0 5px 0 #FE2E2E;
+	color:#fff;
+}
+.user_store_list .str{
+	background: none repeat scroll 0 0 #81BEF7;
+    border-radius: 10px;
+    padding:10px;
+	width:50%;
+	margin-left:100px;
+	box-shadow: 0 0 5px 0 #81BEF7;
+	color:#fff;
+	cursor:pointer;
+}
+.user_store_list .active{
+	background: none repeat scroll 0 0 #013ADF;
+	box-shadow: 0 0 5px 0 #013ADF;
+}
+.user_store_list  img{
+    margin-bottom: -5px;
+    width: 25px;
+}
+.user_store_list .w{color:#2e2e2e;}
+.user_store_list .g{color:#FE2E2E;}
+.user_store_list .s{color:#013ADF;}
+.user_store_list .note{
+    background: none repeat scroll 0 0 #2e2e2e;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 0 #2e2e2e;
+    color: #fff;
+    margin: 0 0 30px;
+    padding: 10px;
+}
+
+.adminhtml-sales-order-view .grid tbody.even tr.grid_container, 
+.adminhtml-sales-order-view .grid tbody.even tr.grid_container tbody tr,
+.adminhtml-sales-order-creditmemo-view .grid tbody.even tr.grid_container, 
+.adminhtml-sales-order-creditmemo-view .grid tbody.even tr.grid_container tbody tr,
+.adminhtml-sales-order-shipment-view .grid tbody.even tr.grid_container, 
+.adminhtml-sales-order-shipment-view .grid tbody.even tr.grid_container tbody tr,
+.adminhtml-sales-order-invoice-view tbody.even tr.grid_container, 
+.adminhtml-sales-order-invoice-view .grid tbody.even tr.grid_container tbody tr
+{ 
+    background: none repeat scroll 0 0 #0040ff !important;
+    box-shadow: 0 0 5px 0 #0040ff;
+    color: #fff !important;
+    font-size: 13px !important;
+}
+
+.adminhtml-sales-order-view .grid tbody.odd tr.grid_container,
+.adminhtml-sales-order-view .grid tbody.odd tr.grid_container tbody tr,
+.adminhtml-sales-order-creditmemo-view .grid tbody.odd tr.grid_container,
+.adminhtml-sales-order-creditmemo-view .grid tbody.odd tr.grid_container tbody tr,
+.adminhtml-sales-order-shipment-view .grid tbody.odd tr.grid_container,
+.adminhtml-sales-order-shipment-view .grid tbody.odd tr.grid_container tbody tr,
+.adminhtml-sales-order-invoice-view .grid tbody.odd tr.grid_container,
+.adminhtml-sales-order-invoice-view .grid tbody.odd tr.grid_container tbody tr
+{ 
+    background: none repeat scroll 0 0 #2E2E2E !important;
+    box-shadow: 0 0 5px 0 #2E2E2E;
+    color: #fff !important;
+    font-size: 13px !important;
+}
+
+.adminhtml-sales-order-view .grid tbody.odd tr td.vendor_grid_container, 
+.adminhtml-sales-order-view .grid tbody.even tr td.vendor_grid_container,
+.adminhtml-sales-order-creditmemo-view .grid tbody.odd tr td.vendor_grid_container, 
+.adminhtml-sales-order-creditmemo-view .grid tbody.even tr td.vendor_grid_container,
+.adminhtml-sales-order-shipment-view .grid tbody.odd tr td.vendor_grid_container, 
+.adminhtml-sales-order-shipment-view .grid tbody.even tr td.vendor_grid_container,
+.adminhtml-sales-order-invoice-view .grid tbody.odd tr td.vendor_grid_container, 
+.adminhtml-sales-order-invoice-view .grid tbody.even tr td.vendor_grid_container
+{
+    background: none repeat scroll 0 0 #fe2e2e !important;
+    border-radius: 5px;
+    box-shadow: 0 0 5px 0 #fe2e2e;
+    color: #fff;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+}
+
+.adminhtml-sales-order-view  .vendor_grid_container td,
+.adminhtml-sales-order-shipment-view .vendor_grid_container td,
+.adminhtml-sales-order-creditmemo-view .vendor_grid_container td,
+.adminhtml-sales-order-invoice-view .vendor_grid_container td
+{
+    background: none repeat scroll 0 0 #fe2e2e !important;
+    border-radius: 5px;
+    box-shadow: 0 0 5px 5px #fff;
+    color: #fff;
+    padding: 10px;
+}
+
+.vendor_grid_container a {
+    background: none repeat scroll 0 0 #000;
+    border-radius: 10px;
+    box-shadow: 0 0 4px 1px #fff;
+    color: #fff;
+    padding: 5px 15px;
+    text-decoration: none;
+}
+.vendor_grid_container a:hover{
+	background: none repeat scroll 0 0 #fff; 
+    color: #fe2e2e;
+	text-decoration: none;
+}

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Aitoc_Aitloyalty>
+            <active>true</active>
+            <codePool>local</codePool>
+            <self_name>Loyalty Program</self_name>
+            <priority>80000</priority>
+        </Aitoc_Aitloyalty>
+    </modules>
+</config>
+<!--
+/**
+ * Loyalty Program
+ *
+ * @category:    Aitoc
+ * @package:     Aitoc_Aitloyalty
+ * @version      2.3.20
+ * @license:     SgbtEEmO4TN5qVIe4RyMXvFvrV2LxMVBSCZx9T3Gjw
+ * @copyright:   Copyright (c) 2015 AITOC, Inc. (http://www.aitoc.com)
+ */
+-->

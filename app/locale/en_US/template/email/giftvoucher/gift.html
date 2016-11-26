@@ -1,0 +1,218 @@
+<!--@subject A gift card from {{htmlescape var=$sendername}} @-->
+<!--@vars
+{"htmlescape var=$name":"Recipient Name",
+"htmlescape var=$sendername":"Sender name",
+"var code":"Gift Card Code",
+"var balance":"Gift Card Balance",
+"var status":"Status",
+"htmlescape var=$message":"Message",
+"var expiredat":"Expired At"}
+@-->
+
+<!--@styles
+body,td { background:#FFFFFF; margin:0; padding:0; color:#2f2f2f; font:13px/1.35em Verdana, Arial, Helvetica, sans-serif; }
+pre{ white-space: pre-wrap; white-space: -moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; word-wrap: break-word;}
+@-->
+
+<div style="font:13px/1.35em Verdana, Arial, Helvetica, sans-serif;">
+    <table cellspacing="0" cellpadding="0" border="0" width="98%" style="margin-top:10px; font:11px/1.35em Verdana, Arial, Helvetica, sans-serif; margin-bottom:10px;">
+        <tr>
+            <td align="center" valign="top">
+                <!-- [ header starts here] -->
+                <table cellspacing="0" cellpadding="0" border="0" width="660">
+                    <tr>
+                        <td valign="top">
+                            <a href="{{store url=""}}">
+                                <img src="{{skin url="images/logo_email.gif" _area='frontend'}}" alt="{{var store.getFrontendName()}}"  style="margin-bottom:10px;" border="0"/>
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- [ middle starts here] -->
+                <table cellspacing="0" cellpadding="0" border="0" width="660">
+                    <tr>
+                        <td valign="top">
+                            <p>
+                                <strong>Dear {{htmlescape var=$name}}</strong>,<br/>
+                                We are glad to inform that <strong>{{htmlescape var=$sendername}}</strong> has sent you a Gift Card from {{var store.getFrontendName()}}.<br/>
+                                You can comfortably use the Gift Card(s) to purchase other products at <a href="{{store url=""}}">{{var store.getFrontendName()}}</a> or add it to your Gift Card list by clicking  <a href="{{var addurl}}"> here</a>.<br/>
+                                Print Gift Card <a href="{{store url=""}}/giftvoucher/index/printemail/k/{{var secure_key}}">now</a></br>
+                            </p>
+                            <p>
+                            {{depend back}}
+                            <div>
+                                <div style="width: 655px;padding-top: 30px; height: 365px;font-size: 14px;background-image:url({{var image}})">
+                                    <div style="position: relative; height: 60px; font-size: 40px; font-style: italic;">                                        
+                                        {{if logo}}
+                                        <img src="{{var logo}}" height="50" style="margin-left: 50px; float: left; margin-top: 3px"/>
+                                        {{else}}
+                                        <img src="{{skin url="images/logo_email.gif" _area='frontend'}}" height="50" style="margin-left: 50px; float: left; margin-top: 3px"/>
+                                        {{/if}}
+                                        <div style="line-height: 60px; margin-left: 20px; float: left; color: {{var style}}; font-family: time new roman"><span>{{var template.caption}}</span></div>
+                                    </div>
+                                    <div style="width: 655px;height: 25px;font-size: 16px;">
+                                        <div style="width: 47%; float: left; text-align: right; padding-right: 20px">
+                                            <label style="font-style: italic; color: {{var text}}; font-family: time new roman">from:</label>
+                                            <span style="color: {{var style}}">{{var sendername}}</span>
+                                        </div>
+                                        <div style="width: 46%; float: left; padding-left: 19px; border-left: 1px solid #5e5e5e;">
+                                            <label style="font-style: italic;color: {{var text}}; font-family: time new roman">to: </label>
+                                            <span style="color: {{var style}}">{{var receivename}}</span>
+                                        </div>
+                                    </div>
+                                    <div style="position: relative;width: 600px; height: 100px;margin: 0 auto;margin-top: 5px; margin-left: 27px">
+                                        <div style="background-image: url({{skin url='images/giftvoucher/box-message2.png' _area='frontend'}}); padding: 0 5px; padding-bottom: 9px; width: 600px; height: 89px; display:table-cell; vertical-align: middle;"><table style="height:85px"><tr><td style="vertical-align:middle; color: {{var text}}"><div style="max-height: 85px; overflow: hidden; font-size: 11px" >{{var message}}</div></td></tr></table></div>
+                                    </div>
+                                    <div style="position: relative;margin: 0 0 10px 0;width: 655px; height: 75px; ">
+                                        <div style="width: 177px; height: 75px;float: left; margin-left: 150px">
+                                            <div style="height: 21px; color: {{var text}}">value</div>
+                                            <div class="giftcard-style-color giftcard-price-change" style="font-size: 25px; line-height: 40px; height: 50px;color: {{var style}}; font-weight: bold; font-family: time new roman">{{var balance}}</div>
+                                        </div>
+                                        <div style="width: 328px; height: 75px;float: left">  
+                                            {{if barcode}}
+                                            <div style="height: 21px">
+                                                <label style="color: {{var text}}">Card number:</label>
+                                                <span class="giftcard-style-color" style="color: {{var style}}; font-weight: bold;font-family: time new roman">{{var code}}</span>
+                                            </div>
+                                            <span style="width: 180px; height: 50px"><img src='{{var barcode}}' {{var resize}} /></span>
+                                           {{else}}
+                                            <div style='color: {{var text}}'>Card number</div>
+                                            <div style="font-size: 30px; line-height: 58px; color: {{var style}}; font-weight: bold; font-family: time new roman">{{var code}}</div>
+                                            {{/if}}
+                                        </div>
+                                    </div>
+                                    <div style="width: 655px; height: 50px;padding: 3px 0; overflow: hidden;background: #FFF;opacity: 0.7; filter: alpha(opacity= 70); text-align: center;display:table-cell; vertical-align: middle">
+                                        <div style="width: 450px; margin: 0 auto;">
+                                            <p style="font-size: 11px;line-height: 15px; margin: 0; color: {{var text}}">{{var note}}</p>
+                                        </div>
+                                    </div>    
+                                </div>
+                            </div>
+                            {{/depend}}
+                            {{depend top}}
+                            <div style="width: 655px; height: 400px;font-size: 14px;">
+                                <img src="{{var image}}" width="655" height="150" />
+                                <div style="width: 615px; height: 220px; padding: 20px; padding-top: 10px;background-image:url({{var background}})">
+                                    <div style="width: 615px; height: 70px;">
+                                        <div style="width: 455px; height: 70px; font-size: 40px; font-style: italic; color: orange;float: left; padding-top: 10px">
+                                            {{if logo}}
+                                            <img src="{{var logo}}" height="50" style="float:left"/>
+                                            {{else}}
+                                            <img src="{{skin url="images/logo_email.gif" _area='frontend'}}" height="50" style="float:left"/>
+                                            {{/if}}
+                                            <span style="line-height: 55px; font-size: 40px; font-style: italic; color: {{var style}}; float: left; margin-left: 20px; font-family: time new roman">{{var template.caption}}</span>
+                                        </div>
+                                        <div style="width: 160px; height: 70px; float: left;">
+                                            <div style="text-align: right; width: 160px;height: 21px; color: {{var text}}">value</div>
+                                            <div style="width: 160px; text-align: right; font-size: 25px;height: 50px; line-height:40px; color: {{var style}}; font-weight: bold">{{var balance}}</div>
+                                        </div>
+                                    </div>
+                                    <div style="width: 615px; height: 25px;">
+                                        <div style="width: 320px; height: 25px; padding-left: 5px; float: left;font-size: 16px;">
+                                            <span style="margin-right: 15px">
+                                                <label for="giftcard-from" style="font-style: italic; color: {{var text}}; font-family: time new roman">from:</label>
+                                                <span style="color: {{var style}};">{{var sendername}}</span>
+                                            </span>
+                                            |
+                                            <span style="margin-left: 15px">
+                                                <label for="giftcard-to" style="font-style: italic;color: {{var text}}; font-family: time new roman">to: </label>
+                                                <span style="color: {{var style}};">{{var receivename}}</span>
+                                            </span>
+                                        </div>
+                                        <div style="width: 290px; float: left; text-align: right;font-size: 14px;">
+                                            <span style="width: 290px;">
+                                                <label style="color: {{var text}}">Card number:</label>
+                                                {{if barcode}}
+                                                <span style="color: {{var style}}; font-weight: bold; font-family: time new roman">{{var code}}</span>
+                                                {{/if}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div style="position: relative; width: 615px; height: 120px;">
+                                        <div style="float: left;width: 340px; height: 100px;margin-top: 20px; ">
+                                            <div style="background-image: url({{skin url='images/giftvoucher/box-message.png' _area='frontend'}}); padding: 0 5px; padding-bottom: 9px; width: 340px; height: 91px;display:table-cell; vertical-align: middle"><table width='100%' style="height:85px"><tr><td style="vertical-align:middle; color: {{var text}}"><div style="max-height: 85px; overflow: hidden; font-size: 11px" >{{var message}}</div></td></tr></table></div>
+                                        </div>
+                                        <div style="float: left; width: 275px;text-align: right">
+                                            <span style="width: 180px; height: 50px ">
+                                                {{if barcode}}
+                                                <img src="{{var barcode}}" {{var resize}}/>
+                                                {{else}}
+                                                <div style="font-size: 24px;line-height: 35px; color: {{var style}}; font-weight: bold;font-family: time new roman">{{var code}}</div>
+                                                {{/if}}
+                                            </span>
+<!--                                            <div style="height: 5px"></div>-->
+                                            <div style="width: 260px; height: 63px; overflow: hidden; padding-left: 15px; margin-top: 5px;display:table-cell; vertical-align: bottom">
+                                                <p style="font-size: 11px; line-height: 15px; margin: 0; color: {{var text}}">{{var note}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {{/depend}}
+                            {{depend left}}
+                            <div style="width: 655px; height: 400px;font-size: 14px;">
+                                <div style="width: 275px; height: 50px; padding-top: 300px; padding-bottom: 35px; float: left; background-image: url({{var image}})">
+                                    <div style="width: 275px; height: 50px; padding:5px; background:#fff;; display: table-cell; vertical-align: middle; text-align: center">
+                                        {{if logo}}
+                                        <img src="{{var logo}}" height="50"/>
+                                        {{else}}
+                                        <img src="{{skin url="images/logo_email.gif" _area='frontend'}}" height="50"/>
+                                        {{/if}}
+                                    </div>
+                                </div>
+                                <div style="width: 340px; height: 360px; padding: 20px;float: left; background-image: url({{var background}})">
+                                    <div style="width: 340px; height: 60px; line-height: 40px; font-size: 40px; font-style: italic; color: {{var style}}; font-family: time new roman">
+                                        {{var template.caption}}
+                                    </div>
+                                    <div style="width: 340px;font-size: 16px; height: 35px">
+                                        <span style="margin-right: 15px">
+                                            <label style="font-style: italic;color: {{var text}}; font-family: time new roman">from:</label>
+                                            <span style="color: {{var style}};">{{var sendername}}</span>
+                                        </span>
+                                        |
+                                        <span style="margin-left: 15px">
+                                            <label for="giftcard-to" style="font-style: italic;color: {{var text}}; font-family: time new roman">to: </label>
+                                            <span style="color: {{var style}};">{{var receivename}}</span>
+                                        </span>
+                                    </div>
+                                    <div style="width: 340px; height: 100px;background-image: url({{skin url='images/giftvoucher/box-message.png' _area='frontend'}})">
+                                        <div style="padding: 0 5px; padding-bottom: 9px; width: 330px; height: 91px;display:table-cell; vertical-align: middle;"><table style="height:85px;"><tr><td style="vertical-align:middle; color: {{var text}} ;"><div style="max-height: 85px; overflow: hidden; font-size: 11px" >{{var message}}</div></td></tr></table></div>
+                                    </div>
+                                    <div style="width: 340px;height: 21px;margin-top:8px">
+                                        <span style="width: 55px; float: left; height: 21px; color: {{var text}}">value</span>
+                                        <span style="width: 285px; float: right; text-align: right">
+                                            <label style="color: {{var text}}">Card number:</label>
+                                            {{if barcode}}
+                                            <span style="color: {{var style}}; font-weight: bold">{{var code}}</span>
+                                            {{/if}}
+                                        </span>
+                                    </div>
+                                    <div style="width: 340px;height: 70px">
+                                        <span style="width: 130px; height: 50px; line-height: 40px; float: left; font-size: 25px; color: {{var style}}; font-weight: bold; font-family: time new roman">{{var balance}}</span>
+                                        <span style="width: 210px; height: 50px; float: left; text-align: right">
+                                            {{if barcode}}
+                                            <img src="{{var barcode}}" {{var resize}} style="float:right"/>
+                                            {{else}}
+                                            <span style="line-height: 45px; font-size: 20px; color: {{var style}}; font-weight: bold; font-family: time new roman">{{var code}}</span>
+                                            {{/if}}
+                                        </span>
+                                    </div>
+                                    <div style="width: 340px;height: 65px; overflow: hidden;display:table-cell; vertical-align: bottom">
+                                        <p style="font-size: 11px;line-height: 16px; margin: 0; color: {{var text}}">{{var note}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {{/depend}}
+                            </p>
+                            <p>
+                                If you have any questions on your Gift card, please feel free to contact us at <a href="mailto:{{config path='trans_email/ident_support/email'}}" style="color:#1E7EC8;">{{config path='trans_email/ident_support/email'}}</a> or by phone at {{config path='general/store_information/phone'}}.
+                            </p>
+                            <p>Yours sincerely,<br/><strong>{{var store.getFrontendName()}}</strong></p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>

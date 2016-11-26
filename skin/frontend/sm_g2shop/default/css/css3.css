@@ -1,0 +1,59 @@
+/* Using CSS3 for some visual enhancements. (Will be degraded nicely for non-CSS3 browsers.)*/
+.transition,
+.img-wrapper > a:before,
+.owl-controls .owl-nav .owl-prev,
+.owl-controls .owl-nav .owl-next,
+.service-bottom .i-con > a:before,
+.list-payment li img,
+.static-image-center .img-block  > a:before,
+.feature-brand-block .item a img,
+.block-product .bs-image > a:before,
+.lastes-blog .item-latest-blog .img-wrapper > a:before,
+.client-image > a:before,
+.socials-wrap ul li a,
+.respl-item  .add-to-links li a,
+.block-layered-nav .currently ol li,
+.yt-product-detail .yt-detail-right .add-to-links li a,
+.our-member  .respl-item .w-image-box .item-image > a:before,
+.service-bottom-home-left .i-con > a:before,
+.save-up > a:before,
+.block-st-img > a:before,
+.respl-item .w-image-box > span:before,
+.btn-button-st{
+	-moz-transition: all 0.3s ease-in-out 0s;
+	-webkit-transition: all 0.3s ease-in-out 0s;
+	-o-transition: all 0.3s ease-in-out 0s;
+	-ms-transition: all 0.3s ease-in-out 0s;
+	transition: all 0.3s ease-in-out 0s;
+}
+
+.yt-tab-listing .respl-items-container .respl-items .respl-item .item-inner .item-image:hover img,
+.yt-tab-listing .respl-items-container .respl-items .respl-item .item-inner .item-image img,
+.container-slider .slider .vpo-wrap .vp .item .item-wrap .item-img:hover img,
+.container-slider .slider .vpo-wrap .vp .item .item-wrap .item-img img,
+#yt_footer .yt-footer-bottom .block-payment  img:hover,
+#yt_footer .yt-footer-bottom .block-payment img,
+.mega-bestsale .list-items .item .product-image:hover img,
+.mega-bestsale .list-items .item .product-image img,
+.mg-menu-image .mg-menu-image-item:hover img,
+.mg-menu-image .mg-menu-image-item img,
+#yt_main .products-list .product-image:hover img,
+#yt_main .products-list .product-image img,
+#yt_main .products-grid .product-image:hover img,
+#yt_main .products-grid .product-image img,
+#yt_wrapper #yt_left .left-banner:hover img,
+#yt_wrapper #yt_left .left-banner img,
+.members .member .member-img:hover img,
+.members .member .member-img img,
+.onpen-sidebar #yt_wrapper,
+#yt_wrapper,
+.yt_ressidebar_screennav,
+ul.nav-menu li.parent > .res-wrapnav,
+ul.nav-menu li.parent.open > .res-wrapnav{
+	-moz-transition: all 0.5s ease-in-out 0s;
+	-webkit-transition: all 0.5s ease-in-out 0s;
+	-o-transition: all 0.5s ease-in-out 0s;
+	-ms-transition: all 0.5s ease-in-out 0s;
+	transition: all 0.5s ease-in-out 0s;
+}
+

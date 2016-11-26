@@ -1,0 +1,225 @@
+<?php 
+	$_product = $this->getProduct();
+	$_allChilds = $this->getAllChildProducts();
+	$_superAttr = $this->getSuperAttribute();
+	$_isCptp = $this->getMatrixHelper()->isCptpEnable();
+?>
+<?php if ($_product->isSaleable() && count($_allChilds)):?>
+
+<h2><?php echo $this->__('Product Matrix') ?></h2>
+<div class="std">
+    <table class="product-matrix data-table" id="product-matrix">
+        <thead>
+            <tr>
+                <?php if($this->_showImage == 1):?>
+                    <th><?php echo $this->__('Product Image');?></th>
+                <?php endif;?>
+                <th><?php echo $this->__('Product Name');?></th>
+                <th><?php echo $this->__('SKU');?></th>
+                <?php foreach($_superAttr as $key => $attr):?>
+                    <th><?php echo $attr['label'];?></th>
+                <?php endforeach;?>
+                <th><?php echo $this->__('Unit price');?></th>
+                <th><?php echo $this->__('Total Quantity');?></th>
+                <?php if($this->getMatrixHelper()->isShowRowTotal($_product) || $this->getMatrixHelper()->isShowGrandTotal($_product)):?>
+                    <th><?php echo $this->__('Total');?></th>
+                <?php endif;?>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <?php if($this->_showImage == 1):?><th></th><?php endif;?>
+                <th colspan="<?php echo count($_superAttr)+1;?>"></th>
+                <th><?php echo $this->__('Total Quantity');?></th>
+                <th></th>
+                <th class="matrix-total-qty dyn">0</th>
+                <?php if($this->getMatrixHelper()->isShowGrandTotal($_product)):?>
+                    <th id="matrix-total-price"><?php echo Mage::helper('core')->currency(0,true);?></th>
+                <?php elseif($this->getMatrixHelper()->isShowRowTotal($_product)):?>
+                    <th></th>
+                <?php endif;?>
+            </tr>
+        </tfoot>
+        <tbody id="matrix-body">
+        <?php foreach($_allChilds as $pid => $productData):?>
+            <tr>	
+                <?php if($this->_showImage == 1):?>
+                    <td valign="middle"><?php echo $productData['image'];?></td>
+                <?php endif;?>
+                <td>
+                    <?php echo $productData['name'];?><br/>
+					<?php if(isset($productData['stock'])) echo '<b>'.$this->__('Stock').' : </b>'.$productData['stock'];?>
+                    <?php if(Mage::getStoreConfig('cpbu/basic_options/update_fields',Mage::app()->getStore()) != ''):?>
+                        <input type="hidden" name="product_matrix[<?php echo $pid;?>][customname]" value="<?php echo $productData['name'];?>" />
+                        <input type="hidden" name="product_matrix[<?php echo $pid;?>][customthumb]" value="<?php echo $productData['thumb'];?>" />
+                    <?php endif;?>
+                </td>
+                <td><?php echo $productData['sku'];?></td>
+                <?php foreach($_superAttr as $key => $attr):?>
+                    <td>
+                        <?php echo $productData[$attr['code']];?>
+                        <input type="hidden" name="product_matrix[<?php echo $pid;?>][super_attribute][<?php echo $key;?>]" value="<?php echo $productData[$attr['code'].'_value'];?>" />
+                    </td>
+                <?php endforeach;?>
+                <td>
+					<div id="tier-unit-price-<?php echo $pid;?>"><?php echo $productData['fprice'];?></div>
+                    <?php if($this->isSimple()):?>
+                        <input type="hidden" id="customprice-tier-<?php echo $pid;?>" name="product_matrix[<?php echo $pid;?>][customprice]" value="<?php echo $productData['exTaxPrice'];?>" />
+                    <?php endif;?>
+                </td>
+                <td>
+                    <?php if($this->getMatrixHelper()->isOnlyCheckBox($_product)):?>
+                        <input type="checkbox" class="input-text matrix-qty" title="Qty" value="1" maxlength="12" name="product_matrix[qty][<?php echo $pid;?>]" id="<?php echo $pid;?>" onclick="reloadMatrixPriceQtyCheckbox();"/>
+                    <?php else:?>
+                        <input type="text" class="input-text qty matrix-qty" title="Qty" value="0" maxlength="12" name="product_matrix[qty][<?php echo $pid;?>]" id="<?php echo $pid;?>" onkeyup="reloadMatrixPriceQty();"/>
+                    <?php endif;?>
+                </td>
+                <?php if($this->getMatrixHelper()->isShowRowTotal($_product)):?>
+                    <td id="matrix-price-<?php echo $pid;?>"><?php echo Mage::helper('core')->currency(0,true);?></td>
+                <?php elseif($this->getMatrixHelper()->isShowGrandTotal($_product)):?>
+                    <td></td>
+                <?php endif;?>
+            </tr>
+        <?php endforeach;?>
+        </tbody>
+    </table>
+    <?php if($_isCptp == 1):?>
+    <input type="hidden" name="cptp_qty" id="cptp_qty"/>
+    <?php endif;?>
+    <?php echo $this->getChildHtml('configurable_matrix_options');?>
+</div>
+<script type="text/javascript">
+//<![CDATA[
+	decorateTable('product-matrix');
+	fMatrixChildProducts = <?php echo json_encode($_allChilds);?>;
+	optionMatrixPrice = <?php echo $this->getJsonConfig() ?>;
+	totalMatrixPrice = totalMatrixQty = 0;
+	reloadMatrixPriceQty = function(){
+		totalMatrixPrice = totalMatrixQty = 0;
+		$$('.matrix-qty').each(function(ele){
+			if(fMatrixChildProducts[ele.id])
+			{
+				var currentPrice = 0;
+				<?php if($_isCptp == 1):?>
+				currentPrice = returnPreparePriceOrTier(ele.id, fMatrixChildProducts[ele.id], (1*ele.value));
+				<?php else:?>
+				if(ele.value > 0) currentPrice = returnPreparePriceOrTier(ele.id, fMatrixChildProducts[ele.id], ele.value);
+				else if($('tier-unit-price-'+ele.id)) $('tier-unit-price-'+ele.id).down('.price').update(fMatrixChildProducts[ele.id].fprice);
+				<?php endif;?>
+				<?php if($this->getMatrixHelper()->isShowRowTotal($_product)):?>
+				$('matrix-price-'+ele.id).down('.price').update(matrixPriceFormate(currentPrice));
+				<?php endif;?>
+				totalMatrixPrice += currentPrice;
+				currentQty = isNaN(parseInt(ele.value)) ? 0 : (parseInt(ele.value) < 0 ? 0 : parseInt(ele.value));
+				totalMatrixQty += currentQty;
+			}
+		});
+		$$('.matrix-total-qty').each(function(item){ if(item.hasClassName('dyn')) item.update(totalMatrixQty); });
+		<?php if($this->getMatrixHelper()->isShowGrandTotal($_product)):?>
+		$('matrix-total-price').down('.price').update(matrixPriceFormate(totalMatrixPrice));
+		<?php endif;?>
+		<?php if($_isCptp == 1):?>
+		if($('cptp_qty')) $('cptp_qty').value = totalMatrixQty;
+		<?php endif;?>
+		if($$('.matrix_custom_options .matrix-custom-option').size()>0) changeAndUpdateOptionPrice();
+	}
+	
+	reloadMatrixPriceQtyCheckbox = function(){
+		totalMatrixPrice = totalMatrixQty = 0;
+		$$('.matrix-qty').each(function(ele){
+			if(fMatrixChildProducts[ele.id])
+			{
+				var currentPrice = currentQty = 0;
+				<?php if($_isCptp == 1):?>
+				currentPrice = returnPreparePriceOrTier(ele.id, fMatrixChildProducts[ele.id], (ele.checked ? ele.value : 0));
+				<?php else:?>
+				if(ele.checked) currentPrice = returnPreparePriceOrTier(ele.id, fMatrixChildProducts[ele.id], ele.value);
+				else if($('tier-unit-price-'+ele.id)) $('tier-unit-price-'+ele.id).down('.price').update(fMatrixChildProducts[ele.id].fprice);
+				<?php endif;?>
+				<?php if($this->getMatrixHelper()->isShowRowTotal($_product)):?>
+				$('matrix-price-'+ele.id).down('.price').update(matrixPriceFormate(currentPrice));
+				<?php endif;?>
+				totalMatrixPrice += currentPrice;
+				if(ele.checked) currentQty = isNaN(parseInt(ele.value)) ? 0 : (parseInt(ele.value) < 0 ? 0 : parseInt(ele.value));
+				totalMatrixQty += currentQty;
+			}
+		});
+		$$('.matrix-total-qty').each(function(item){ if(item.hasClassName('dyn')) item.update(totalMatrixQty); });
+		<?php if($this->getMatrixHelper()->isShowGrandTotal($_product)):?>
+		$('matrix-total-price').down('.price').update(matrixPriceFormate(totalMatrixPrice));
+		<?php endif;?>
+		<?php if($_isCptp == 1):?>
+		if($('cptp_qty')) $('cptp_qty').value = totalMatrixQty;
+		<?php endif;?>
+		if($$('.matrix_custom_options .matrix-custom-option').size()>0) changeAndUpdateOptionPrice();
+	}
+	
+	matrixPriceFormate = function (price){
+		return formatCurrency(price,optionMatrixPrice.priceFormat);
+	}
+	
+	returnPreparePriceOrTier = function(pid, product, qty){
+		var unitPriceTier = product.price, currentPriceTier;
+		var tierPriceMatrix = product.tier;
+		var tirQty = product.tier_qty;
+		var forCheckQty = qty;
+		<?php if($_isCptp == 1):?>
+		forCheckQty = getTotalQty();
+		<?php endif;?>
+			
+		if(product.tier_qty.length > 0){
+			tirQty = tirQty.sort(function(a, b){return b-a});
+			for(var i=0;i<tirQty.length;i++)
+			{
+				if(forCheckQty >= tirQty[i]){
+					unitPriceTier = tierPriceMatrix[tirQty[i]];
+					currentPriceTier = unitPriceTier*qty;
+					break;	
+				}
+			}
+		}
+		currentPriceTier = unitPriceTier*qty;
+		if($('tier-unit-price-'+pid)) $('tier-unit-price-'+pid).down('.price').update(matrixPriceFormate(unitPriceTier));
+		return currentPriceTier;
+	}
+	
+	getTotalQty = function(){
+		var qty = 0;
+		$$('.matrix-qty').each(function(ele){
+			if(ele.type == 'checkbox'){
+				if(ele.checked) qty++;
+			} else {
+				qty += (1*ele.value);
+			}
+		});
+		return qty;
+	}
+	
+	replaceSimpleMediaImages = function(direction){
+			var pid = direction.split('_');
+			pid = pid[0];
+			if(fMatrixChildProducts[pid]){
+				if(fMatrixChildProducts[pid]['has_img'] == 1 && fMatrixChildProducts[pid]['media']){
+					if(fMatrixChildProducts[pid]['media']){
+						$$('.product-img-box')[0].update(fMatrixChildProducts[pid]['media']);
+						setTimeout(function() { 
+						<?php if(version_compare(Mage::getVersion(), '1.9.0.1', '<')===true):?>
+							product_zoom = new Product.Zoom('image', 'track', 'handle', 'zoom_in', 'zoom_out', 'track_hint');
+						<?php else:?>
+							ProductMediaManager.init();
+						<?php endif;?>
+						}, 1000);
+					}
+				}
+			}
+		}
+	
+	window.onload = function(){
+		$$('.add-to-cart .btn-cart').each(function(item){
+			item.setAttribute('onclick',"productAddToCartForm.submit(this,'<?php echo $this->getSubmitUrl($_product) ?>')");
+		});
+		if($('product_addtocart_form')) $('product_addtocart_form').action = '<?php echo $this->getSubmitUrl($_product) ?>';
+	}
+//]]>
+</script>
+<?php endif;?>

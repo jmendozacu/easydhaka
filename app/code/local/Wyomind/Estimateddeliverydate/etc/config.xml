@@ -1,0 +1,233 @@
+<?xml version="1.0"?>
+
+<config>
+    <modules>
+        <Wyomind_Estimateddeliverydate>
+            <version>2.2.0</version>
+        </Wyomind_Estimateddeliverydate>
+    </modules>
+    <default>
+        <estimateddeliverydate> 
+            <license>
+                <version>2.2.0</version>
+            </license>
+            <leadtimes_settings>
+                <default_orders_leadtime>1</default_orders_leadtime>
+                <order_shipping_days>1,2,3,4,5,6</order_shipping_days>
+                <order_last_shipping_time>15,00,00</order_last_shipping_time>
+                <base_attribute>0</base_attribute>
+                <holidays>2014-12-25
+2014-01-01</holidays>
+            </leadtimes_settings>
+            <leadtimes_settings_bo>
+                <default_backorders_leadtime>5</default_backorders_leadtime>
+                <backorder_shipping_days>1,2,3,4,5,6,0</backorder_shipping_days>
+                <backorder_last_shipping_time>19,00,00</backorder_last_shipping_time>
+            </leadtimes_settings_bo>
+            <display_settings>
+                <message_in_cart>Your order will be delivered in {{leadtime_from}} days. Estimated delivery date : {{date_from}}.</message_in_cart>
+                <message_in_product_page>For delivery on {{date_from}}, order this item in the next {{countdown}}.</message_in_product_page>
+                <message_in_product_page_bo>For delivery on {{date_from}}, order this item in the next {{countdown}}.</message_in_product_page_bo>
+                <message_for_cart_item>This item will be ready to ship on {{date_from}}.</message_for_cart_item>
+                <message_for_cart_item_bo>This item will be ready to ship on {{date_from}}.</message_for_cart_item_bo>
+                <date_format>l jS \of F Y</date_format>
+                <countdown_format>4</countdown_format>
+            </display_settings>
+        </estimateddeliverydate>
+    </default>
+    <frontend>
+        <layout>
+            <updates>
+                <estimateddeliverydate>
+                    <file>estimateddeliverydate.xml</file>
+                </estimateddeliverydate>
+            </updates>
+        </layout>
+        <translate>
+            <modules>
+                <Wyomind_Estimateddeliverydate>
+                    <files>
+                        <default>Wyomind_Estimateddeliverydate.csv</default>
+                    </files>
+                </Wyomind_Estimateddeliverydate>
+            </modules>
+        </translate>
+    </frontend>
+    <admin>
+        <routers>
+            <estimateddeliverydate>
+                <use>admin</use>
+                <args>
+                    <module>Wyomind_Estimateddeliverydate</module>
+                    <frontName>estimateddeliverydate</frontName>
+                </args>
+            </estimateddeliverydate>
+        </routers>
+    </admin>
+    <adminhtml>
+        
+        <layout>
+            <updates>
+                <estimateddeliverydate>
+                    <file>estimateddeliverydate.xml</file>
+                </estimateddeliverydate>
+            </updates>
+        </layout>
+        <events>
+            <catalog_product_save_before>
+                <observers>
+                    <wyomind_estimateddeliverydate_save_product_data>
+                        <type>model</type>
+                        <class>Wyomind_Estimateddeliverydate_Model_Observer</class>
+                        <method>saveProductTabData</method>
+                    </wyomind_estimateddeliverydate_save_product_data>
+                </observers>
+            </catalog_product_save_before>
+            <admin_system_config_changed_section_estimateddeliverydate>
+                <observers>
+                    <wyomind_estimateddeliverydate_save_config>
+                        <type>model</type>
+                        <class>Wyomind_Estimateddeliverydate_Model_Observer</class>
+                        <method>saveConfig</method>
+                    </wyomind_estimateddeliverydate_save_config>
+                </observers>
+            </admin_system_config_changed_section_estimateddeliverydate>
+            <sales_order_place_after>
+                <observers>
+                    <wyomind_estimateddeliverydate_checkout_submit_all_after_observer>
+                        <type>singleton</type>
+                        <class>Wyomind_Estimateddeliverydate_Model_Observer</class>
+                        <method>orderUpdate</method>
+                    </wyomind_estimateddeliverydate_checkout_submit_all_after_observer>
+                </observers>
+            </sales_order_place_after>
+        </events>
+       
+        <menu>
+            <catalog>
+                <children>
+                    <attributes>
+                        <children>
+                            <attribute_leadtimes translate="title" module="estimateddeliverydate">
+                                <title>Manage Leadtime/Attribute</title>
+                                <sort_order>3</sort_order>
+                                <action>estimateddeliverydate/adminhtml_manageleadtimes</action>
+                            </attribute_leadtimes>
+                        </children>
+                    </attributes>
+                </children>
+            </catalog>
+        </menu>
+        
+        <acl>
+            <resources>
+                <all>
+                    <title>Allow Everything</title>
+                </all>
+                <admin>
+                    <children>
+                        <catalog>
+                            <children>
+                                <attributes>
+                                    <children>
+                                        <attribute_leadtimes translate="title" module="estimateddeliverydate">
+                                            <title>Manage Leadtime/Attribute</title>
+                                        </attribute_leadtimes>
+                                    </children>
+                                </attributes>
+                            </children>
+                        </catalog>
+                        <system>
+                            <children>
+                                <config>
+                                    <children>
+                                        <estimateddeliverydate> 
+                                            <title>Estimated Delivery Time</title>
+                                        </estimateddeliverydate>
+                                    </children>
+                                </config>
+                            </children>
+                        </system>
+                    </children>
+                </admin>
+            </resources>
+        </acl> 
+       
+    </adminhtml>
+    <global>
+        
+        <models>
+            <estimateddeliverydate>
+                <class>Wyomind_Estimateddeliverydate_Model</class>
+                <resourceModel>estimateddeliverydate_mysql4</resourceModel>
+            </estimateddeliverydate>
+            
+            <estimateddeliverydate_mysql4>
+                <class>Wyomind_Estimateddeliverydate_Model_Mysql4</class>
+                <entities>
+                    <attributes>
+                        <table>eav_attribute_leadtime</table>
+                    </attributes>
+                </entities>
+            </estimateddeliverydate_mysql4>
+            <cataloginventory>
+                <rewrite>
+                    <stock_item>Wyomind_Estimateddeliverydate_Model_CatalogInventory_Stock_Item</stock_item>
+                </rewrite>
+            </cataloginventory>
+        </models>
+        
+        <resources>
+            <estimateddeliverydate_setup>
+                <setup>
+                    <module>Wyomind_Estimateddeliverydate</module>
+                    <class>Wyomind_Estimateddeliverydate_Model_Resource_Eav_Mysql4_Setup</class>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </estimateddeliverydate_setup>
+            <estimateddeliverydate_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </estimateddeliverydate_write>
+            <estimateddeliverydate_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </estimateddeliverydate_read>
+        </resources>
+         
+       
+        
+        <blocks>
+            <estimateddeliverydate>
+                <class>Wyomind_Estimateddeliverydate_Block</class>
+            </estimateddeliverydate>
+            <adminhtml>
+                <rewrite>
+                    <catalog_product_edit_tab_inventory>Wyomind_Estimateddeliverydate_Block_Adminhtml_Catalog_Product_Edit_Tab_Inventory</catalog_product_edit_tab_inventory>
+                </rewrite>
+            </adminhtml>
+        </blocks>
+      
+        <helpers>
+            <estimateddeliverydate>
+                <class>Wyomind_Estimateddeliverydate_Helper</class>
+            </estimateddeliverydate>
+        </helpers>
+        <events>
+            <sales_order_place_before>
+                <observers>
+                    <wyomind_advancedinventory_checkout_submit_all_after_observer>
+                        <type>singleton</type>
+                        <class>Wyomind_Estimateddeliverydate_Model_Observer</class>
+                        <method>addComment</method>
+                    </wyomind_advancedinventory_checkout_submit_all_after_observer>
+                </observers>
+            </sales_order_place_before>
+        </events>
+        
+    </global>
+</config>

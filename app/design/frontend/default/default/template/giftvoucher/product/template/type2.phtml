@@ -1,0 +1,79 @@
+<?php 
+    $barcode = Mage::helper('giftvoucher')->getGeneralConfig('barcode_enable');
+    $barcode_type = Mage::helper('giftvoucher')->getGeneralConfig('barcode_type');
+    $url_barcode = '';
+    if($barcode){
+        if($barcode_type == 'code128') $url_barcode = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_MEDIA) . 'giftvoucher/template/barcode/default.png';
+        else $url_barcode = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_MEDIA) . 'giftvoucher/template/barcode/qr.png';
+    }
+    if(Mage::getStoreConfig('giftvoucher/print_voucher/logo')) $logo = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_MEDIA) . 'giftvoucher/pdf/logo/'.Mage::getStoreConfig('giftvoucher/print_voucher/logo');
+    else $logo = $this->getSkinUrl('images/logo_print.gif');
+?>
+<div id="giftcard-template-top">
+    <div class="giftcard-template-content giftcard-template-content-top giftcard-change-image-temp2 giftcard-change-image" style="background-image: url(<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_MEDIA) . 'giftvoucher/template/images/top/default.png' ?>);"></div>
+    <div class="giftcard-template-content-temp2 " style="background-image: url(<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_MEDIA) . 'giftvoucher/template/background/top/default.png' ?>);">
+        <div class="giftcard-title-top">
+            <div class="title">
+                <div class="logo-title" style="background:url(<?php echo $logo ?>) center  no-repeat;"></div>
+                <div class="giftcard-style-color giftcard-title"><?php echo $this->__('Giftcard Title') ?></div>
+            </div>
+            <div  class="giftcard-value">
+                <div  class="giftcard-text-color"><?php echo $this->__('Value') ?></div>
+                <div class="giftcard-style-color giftcard-price-change"><span>$100.00</span></div>
+            </div>
+        </div>
+        <div class="giftcard-date">
+            <div class="giftcard-from-to">
+                <span class="giftcard-from">
+                    <label  class="giftcard-text-color" for="giftcard-from"><?php echo $this->__('from') ?>:</label>
+                    <span class="giftcard-style-color giftcard-send-from">&nbsp;<?php echo Mage::helper('customer')->isLoggedIn() ? Mage::helper('customer')->getCustomerName() : ''; ?></span>
+                </span>
+               
+                <span class="giftcard-to">
+                    <label  class="giftcard-text-color" for="giftcard-to"><?php echo $this->__('to') ?>: </label>
+                    <span class="giftcard-style-color giftcard-send-to">&nbsp;</span>
+                </span>
+            </div>
+            <div class="giftcard-code">
+                <span class="giftcard-number">
+                    <label  class="giftcard-text-color"><?php echo $this->__('Gift Card Number') ?>:</label>
+                    <?php if($url_barcode != ''): ?>
+                    <span class="giftcard-style-color">GIFT-XXXX-XXXX</span>
+                    <?php endif; ?>
+                </span>
+            </div>
+        </div>
+        <div class="giftcard-information-top">
+            <div class="giftcard-information">
+                <div class="giftcard-message">
+				<pre class="giftcard-text-color giftcard-custom-message"></pre>
+				</div>
+            </div>
+            <div  class="giftcard-value-550" style="display: none">
+                <div  class="giftcard-text-color"><?php echo $this->__('Value') ?></div>
+                <div class="giftcard-style-color giftcard-price-change"><span>$100.00</span></div>
+            </div>
+            <div class="giftcard-code-550" style="display: none">
+                <span class="giftcard-number">
+                    <label  class="giftcard-text-color"><?php echo $this->__('Gift Card Number') ?>:</label>
+                    <?php if($url_barcode != ''): ?>
+                    <span class="giftcard-style-color">GIFT-XXXX-XXXX</span>
+                    <?php endif; ?>
+                </span>
+            </div>
+            <div class="giftcard-barcode">
+                <span class="giftcard-barcode-value">
+                    <?php if($url_barcode != ''): ?>
+                    <img src="<?php echo $url_barcode ?>" />
+                    <?php else: ?>
+                    <div class="giftcard-style-color">GIFT-XXXX-XXXX</div>
+                    <?php endif; ?>
+                </span>
+                <div style="height: 5px"></div>
+                <div class="giftcard-note">
+                    <p class="giftcard-text-color"><?php echo Mage::getSingleton('giftvoucher/giftvoucher')->getPrintNotes(); ?></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

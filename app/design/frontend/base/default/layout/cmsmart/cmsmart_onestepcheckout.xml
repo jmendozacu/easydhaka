@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<layout>
+	
+	<default>
+		<reference name="top.links">
+			<remove name="checkout_cart_link"/>
+			<block type="checkout/links" name="checkout_cart_link_custom"><action method="addCartLink" ></action></block>
+            <block type="onestepcheckout/links" name="checkout_cart_link_custom"><action method="addCheckoutLink"></action></block>
+        </reference>
+	</default>
+	
+	<onestepcheckout_index_index translate="label">
+		<label>Onepage Checkout</label>
+		        
+        <reference name="root">
+            <action method="setTemplate"><template>page/1column.phtml</template></action>
+        </reference>
+        
+        <reference name="head">	
+        	<!-- <action method="addItem"><type>skin_js</type><name>js/cmsmart/onestepcheckout/jquery-1.10.2.min.js</name></action>
+        	<action method="addItem"><type>skin_js</type><name>js/cmsmart/onestepcheckout/jquery-noconflict.js</name></action>		 -->
+        	<action method="addItem"><type>skin_js</type><name>js/cmsmart/onestepcheckout/calendar.js</name></action>
+        	<action method="addItem"><type>skin_js</type><name>js/cmsmart/onestepcheckout/en.js</name></action>
+        	<action method="addItem"><type>skin_js</type><name>js/cmsmart/onestepcheckout/checkout.js</name></action>
+			<action method="addItem"><type>skin_js</type><name>js/opcheckout.js</name></action>					
+            <action method="addCss"><stylesheet>css/cmsmart/onestepcheckout/onestepcheckout.css</stylesheet></action>
+            <action method="addCss"><stylesheet>css/cmsmart/onestepcheckout/jscal2.css</stylesheet></action>
+            <action method="addCss"><stylesheet>css/cmsmart/onestepcheckout/steel.css</stylesheet></action>
+		</reference>
+        
+        <reference name="content">
+			<block type="onestepcheckout/wrapper" name="es.checkout.container" template="cmsmart/onestepcheckout/wrapper.phtml">
+			
+                    <!--  CMSMART.NET DELIVERY DATE FORM -->
+					<block type="onestepcheckout/onepage_cmsmartdeliverydate" name="onestepcheckout.onepage.shippingmethod.deliverydate" as="deliverydate" template="cmsmart/onestepcheckout/onepage/deliverydate.phtml">
+                   		<block type="onestepcheckout/calendar" name="onestepcheckout.calendar" />
+				    </block>
+					<!--  CMSMART.NET LOGIN FORM  -->
+					<block type="onestepcheckout/onepage_login" name="checkout.onepage.login" as="login" template="cmsmart/onestepcheckout/onepage/login.phtml">
+						<block type="customer/account_forgotpassword" name="forgotPassword" template="cmsmart/onestepcheckout/customer/form/forgotpassword.phtml"/>	
+					</block>
+				 	<!--  CMSMART.NET BILLING FORM -->
+                    <block type="checkout/onepage_billing" name="checkout.onepage.billing" as="billing" template="cmsmart/onestepcheckout/onepage/billing.phtml"/>
+
+                    <!--  CMSMART.NET SHIPPING FORM -->
+                    <block type="checkout/onepage_shipping" name="checkout.onepage.shipping" as="shipping" template="cmsmart/onestepcheckout/onepage/shipping.phtml"/>
+                    
+                    
+                    
+                   
+                    
+                    <!--  CMSMART.NET SHIPPING METHODS FORM -->
+                    <block type="checkout/onepage_shipping_method" name="checkout.onepage.shipping_method" as="shipping_method" template="cmsmart/onestepcheckout/onepage/shipping_method.phtml">
+                    	<block type="checkout/onepage_shipping_method_available" name="checkout.onepage.shipping_method.available" as="available" template="cmsmart/checkout/onepage/shipping_method/available.phtml"/>
+                    	<block type="checkout/onepage_shipping_method_additional" name="checkout.onepage.shipping_method.additional" as="additional" template="cmsmart/checkout/onepage/shipping_method/additional.phtml"/>
+                	</block>
+                	
+                	<!--  CMSMART.NET PAYMENTS METHOD FORM -->
+                	<block type="checkout/onepage_payment" name="checkout.onepage.payment" as="payment" template="cmsmart/onestepcheckout/onepage/payment.phtml">
+	                    <block type="checkout/onepage_payment_methods" name="checkout.payment.methods" as="methods" template="cmsmart/checkout/onepage/payment/methods.phtml">
+	                        <action method="setMethodFormTemplate"><method>purchaseorder</method><template>cmsmart/payment/form/purchaseorder.phtml</template></action>
+	                    </block>
+                	</block>
+			</block>
+        </reference>
+	</onestepcheckout_index_index>		
+	
+	<checkout_onepage_review>	
+		<reference name="checkout.onepage.review.button">
+		 
+			<action method="setTemplate" ifconfig="onestepcheckout/global/status"><template>cmsmart/onestepcheckout/onepage/review/button.phtml</template></action>
+		</reference>
+		
+		<reference name="checkout.onepage.agreements">			
+			<action method="setTemplate" ifconfig="onestepcheckout/global/status"><template>cmsmart/onestepcheckout/onepage/agreements.phtml</template></action>
+		</reference>
+		
+		<!--  CMSMART.NET POLL FORM -->
+ 		<reference name="root">
+			<action method="addItemRender"><type>default</type><block>checkout/cart_item_renderer</block><template>cmsmart/onestepcheckout/onepage/review/item.phtml</template></action>
+            <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>cmsmart/onestepcheckout/onepage/review/item.phtml</template></action>
+            <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>cmsmart/onestepcheckout/onepage/review/item.phtml</template></action>
+			<!--  CMSMART.NET COMMENT FORM -->
+			<block type="onestepcheckout/onepage_comment" name="checkout.order.comment" as="customer.comment"/>
+			
+			<block type="poll/activePoll" name="cmsmartpoll">
+			
+			<action method="setPollTemplate"><template>cmsmart/onestepcheckout/onepage/active_poll.phtml</template><type>poll</type></action>
+			</block>	
+			<block type="onestepcheckout/onepage_subscribed" template="cmsmart/onestepcheckout/onepage/review/subscribed.phtml" name="onestepcheckout.newsletters"/> 
+			<!--  CMSMART.NET COUPON FORM -->
+			<block type="checkout/cart_coupon" name="checkout.cart.coupon" as="coupon" template="cmsmart/onestepcheckout/onepage/coupon.phtml"/>
+			<!-- <block type="checkout/cart_totals" name="checkout.onepage.review.info.totals" as="totals" template="cmsmart/checkout/onepage/review/totals.phtml"/>	 -->
+		</reference>		
+		<reference  name="checkout.onepage.review.info.totals">	
+			<action method="setTemplate"><template>cmsmart/onestepcheckout/onepage/review/totals.phtml</template></action>
+		</reference>		
+	</checkout_onepage_review>
+	
+</layout>

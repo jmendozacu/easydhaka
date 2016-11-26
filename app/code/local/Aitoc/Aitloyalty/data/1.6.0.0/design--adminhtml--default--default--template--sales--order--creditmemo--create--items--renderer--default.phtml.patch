@@ -1,0 +1,33 @@
+diff U3B D:/__AITOC__/projects/2014/MHE-466-57703__lp_bugfix/patch/1.6.2.0/orig/default.phtml D:/__AITOC__/projects/2014/MHE-466-57703__lp_bugfix/patch/1.6.2.0/modif/default.phtml
+--- D:/__AITOC__/projects/2014/MHE-466-57703__lp_bugfix/patch/1.6.2.0/orig/default.phtml	Thu Jan 12 11:36:16 2012
++++ D:/__AITOC__/projects/2014/MHE-466-57703__lp_bugfix/patch/1.6.2.0/modif/default.phtml	Mon Feb 10 12:30:34 2014
+@@ -233,10 +233,29 @@
+                 <?php endif; ?>
+             </span>
+         <?php endif; ?>
++        <?php /*
+         </span>
++        */ ?>
+     </td>
+     <td class="a-right"><?php echo $this->displayPriceAttribute('tax_amount') ?></td>
++    <?php /*
+     <td class="a-right"><?php echo $this->displayPriceAttribute('discount_amount') ?></td>
++    */ ?>
++    <?php 
++        if (strpos($this->displayPriceAttribute('discount_amount'), '$0') > 0)
++        {
++            $newDiscount = $this->displayPriceAttribute('discount_amount');
++        }
++        else if (strpos($this->displayPriceAttribute('discount_amount'), '-') > 0)
++        {
++            $newDiscount = str_replace(array('>-$','[-'), array('>+$','[+'), $this->displayPriceAttribute('discount_amount'));
++        }
++        else
++        {
++            $newDiscount = str_replace(array('>$','['), array('>-$','[-'), $this->displayPriceAttribute('discount_amount'));
++        }
++    ?>
++    <td class="a-right"><?php echo $newDiscount ?></td>
+     <td class="a-right last">
+         <?php echo $this->displayPrices(
+             $_item->getBaseRowTotal() + $_item->getBaseTaxAmount() + $_item->getBaseHiddenTaxAmount() + $_item->getBaseWeeeTaxAppliedRowAmount() - $_item->getBaseDiscountAmount(),

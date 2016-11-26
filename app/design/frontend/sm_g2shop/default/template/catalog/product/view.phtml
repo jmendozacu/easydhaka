@@ -1,0 +1,315 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category   design_default
+ * @package    Mage
+ * @copyright  Copyright (c) 2008 Irubin Consulting Inc. DBA Varien (http://www.varien.com)
+ * @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+
+/**
+ * Product view template
+ *
+ * @see Mage_Catalog_Block_Product_View
+ * @see Mage_Review_Block_Product_View
+ */
+global $var_yttheme;
+?>
+<?php $_helper = $this->helper('catalog/output'); ?>
+<?php $_product = $this->getProduct(); ?>
+<script type="text/javascript">
+    var optionsPrice = new Product.OptionsPrice(<?php echo $this->getJsonConfig() ?>);
+	jQuery(document).ready(function(){
+		jQuery('.yt-tab-navi li').click(function (e){
+			e.preventDefault()
+			jQuery(this).children().tab('show')
+		})
+	});   
+</script>
+
+
+<div id="messages_product_view"> <?php echo $this->getMessagesBlock()->getGroupedHtml() ?></div>
+<div class="yt-product-detail">
+	<div class="yt-product-detail-inner">
+		<div class="row product-essential">
+			<div class="box-1">
+				<div class="image-box-detail col-lg-5 col-md-5 col-sm-5 col-xs-12">
+					<div class="product-img-box">
+						<?php echo $this->getChildHtml('media') ?>
+                                                <div class="like-social">
+											<div class="addthis_toolbox addthis_default_style ">
+											<a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+											<iframe allowtransparency="true" frameborder="0" scrolling="no" src="https://platform.twitter.com/widgets/tweet_button.html" style="width:95px; height:20px; float:left;"></iframe>						                              
+											<!--<a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>-->
+											<a class="addthis_counter addthis_pill_style"></a>						
+											</div>
+											<script type="text/javascript">var addthis_config = {"data_track_addressbar":false};</script>
+										   
+											<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-529be2200cc72db5"></script>
+											
+										</div>
+					</div>
+				</div>	
+				<div class="yt-detail-right col-lg-7 col-md-7 col-sm-7 col-xs-12">			
+					<form action="<?php echo $this->getSubmitUrl($_product) ?>" method="post" id="product_addtocart_form" <?php if($_product->getOptions()): ?> enctype="multipart/form-data" <?php endif; ?>>				
+						<div class="product-shop">
+							<h2 class="product-name">
+									<?php echo $_helper->productAttribute($_product, $this->htmlEscape($_product->getName()), 'name') ?>
+							</h2>
+
+							<div class="product-review">
+								<?php echo $this->getReviewsSummaryHtml($_product, false, true)?>
+							</div>
+							
+							<?php echo $this->getChildHtml('alert_urls') ?>
+							<?php echo $this->getChildHtml('product_type_data') ?>
+<?php echo "<h2 class='buy_bulk_save'>Buy Bulk & Save!</h2>"; ?>							
+<?php echo $this->getTierPriceHtml() ?>
+							<?php echo $this->getChildHtml('extrahint') ?>						
+							<fieldset class="no-display">
+								<input type="hidden" name="product" value="<?php echo $_product->getId() ?>" /> 
+								<input type="hidden" name="related_product" id="related-products-field" value="" />
+							</fieldset>
+
+							<?php if ($_product->getShortDescription()):?>
+							
+							<div class="short-description">
+								<h2 class="title-short-des"><?php echo $this->__('QUICK OVERVIEW');?></h2>
+								<?php echo $_helper->productAttribute($_product, $_product->getshort_description(), 'short_description'); ?>
+							</div>
+							<?php endif;?>
+							
+							<?php if (!$this->hasOptions()):?>
+								<div class="add-to-box">
+									<?php if($_product->isSaleable()): ?>
+										<?php echo $this->getChildHtml('addtocart') ?>
+									<?php endif; ?>
+									<?php echo $this->getChildHtml('addto') ?>
+								</div>
+								<?php echo $this->getChildHtml('extra_buttons') ?>
+							<?php elseif (!$_product->isSaleable()): ?>
+								<div class="add-to-box">
+									<?php echo $this->getChildHtml('addto') ?>
+								</div>
+							<?php endif; ?>
+							
+							<?php echo $this->getChildHtml('other');?>
+							<?php if ($_product->isSaleable() && $this->hasOptions()):?>
+							<?php echo $this->getChildChildHtml('container1', '', true, true) ?>
+							<?php endif;?>
+							<div class="clearer"></div>
+							<?php if ($_product->isSaleable() && $this->hasOptions()):?>
+								<?php echo $this->getChildChildHtml('container2', '', true, true) ?>
+							<?php endif;?>	
+						</div>
+
+															
+					</form>
+				</div>
+				
+				<div id="yt_tab_products" class="col-md-12 tab-product-detail">
+						<ul class="yt-tab-navi">
+							<?php if ($_description = $this->getChildHtml('description')):?>
+							<li class="active">
+								<a href="#yt_tab_decription"><?php echo $this->__('Description') ?></a>
+							</li>
+							<?php endif; ?>
+							<?php if($product_additional_data = $this->getChildHtml('product_additional_data')): ?>
+							<li>
+								<a href="#yt_tab_tags"><?php echo $this->__('Tags') ?></a>
+							</li>
+							<?php endif; ?>							
+							<?php if($review_form = $this->getChildHtml('review_form')): ?>
+							<li>
+								<a href="#yt_tab_reviewform"><?php echo $this->__('Reviews') ?></a>
+							</li>
+							<?php endif; ?>
+							<?php if ($_additional = $this->getChildHtml('additional')):?>
+								<li>
+									<a href="#yt_tab_additional"><?php echo $this->__('PRICES & SIZES') ?></a>
+								</li>
+							<?php endif; ?>	
+							<?php if ($var_yttheme != null && $var_yttheme->getParam('show_customtab') == 1 ) : ?>
+								<li>
+									<a href="#yt_tab_custom"><?php echo $var_yttheme->getParam('customtab_name'); ?></a>
+								</li>
+							<?php endif;?>
+						</ul>
+						<div class="yt-tab-content tab-content">						
+							<?php if ( $_description ):?>
+							<div id="yt_tab_decription" class="tab-pane in active">
+								<?php echo $_description ?>
+							</div>
+							<?php endif;?>
+							<?php if( $product_additional_data ): ?>
+							<div id="yt_tab_tags" class="tab-pane">
+								<?php echo $product_additional_data; ?>
+							</div>
+							<?php endif;?>							
+							<?php if( $review_form ): ?>
+							<div id="yt_tab_reviewform" class="tab-pane">
+								<?php echo $this->getChildHtml('product_reviews');?>
+								<?php echo $review_form; ?>
+							</div>
+							<?php endif;?>														
+							<?php if ( $_additional ) : ?>
+							<div id="yt_tab_additional" class="tab-pane">
+								<?php echo $_additional ?>
+							</div>
+							<?php endif;?>
+							<?php if ($var_yttheme != null && $var_yttheme->getParam('show_customtab') == 1 ) : ?>
+							<div id="yt_tab_custom" class="tab-pane">
+								<?php //echo $var_yttheme->getParam('customtab_content'); 
+									$contenttab = $var_yttheme->getParam('customtab_content');                             
+									$_myHelper = Mage::helper('cms');
+									$_processor = $_myHelper->getBlockTemplateProcessor();
+									echo $_processor->filter($contenttab); 
+								?>
+								
+							</div>
+							<?php endif;?>						
+						</div>
+				</div>	
+				
+				<div style="clear:both;"></div>
+			</div>
+			<?php if( ($var_yttheme != null && $var_yttheme->getParam('show_related') == 1 && $related_products = $this->getChildHtml('related_products')) || ($var_yttheme != null && $var_yttheme->getParam('show_upsell') == 1)  ){?>
+			<div class="box-2">
+				<div id="yt_tab_products" class="col-md-12 tab-product-detail tab-product-ex">
+						<ul class="yt-tab-navi">
+							<?php if( $var_yttheme != null && $var_yttheme->getParam('show_related') == 1 && $related_products = $this->getChildHtml('related_products') ){?>
+								<li class="active">
+									<a href="#yt_tab_related"><?php echo $this->__('Related Products') ?></a>
+								</li>
+							<?php } ?>
+							
+							<?php if( $var_yttheme != null && $var_yttheme->getParam('show_upsell') == 1 && $upsell_products = $this->getChildHtml('upsell_products') ){?>
+							<li>
+								<a href="#yt_tab_upsell"><?php echo $this->__('Upsell Products') ?></a>
+							</li>
+							<?php } ?>
+						</ul>
+						<div class="yt-tab-content tab-content">						
+						
+							<?php if($var_yttheme != null && $var_yttheme->getParam('show_related') == 1 && $related_products = $this->getChildHtml('related_products') ){?>
+								<div id="yt_tab_related" class="tab-pane in active">
+									<?php echo $related_products;?>
+								</div>
+							<?php } ?>
+							
+							<?php if($var_yttheme != null && $var_yttheme->getParam('show_upsell') == 1 && $upsell_products = $this->getChildHtml('upsell_products') ){?>
+								<div id="yt_tab_upsell" class="tab-pane <?php if( $var_yttheme != null && $var_yttheme->getParam('show_related') == 0 && $var_yttheme->getParam('show_upsell') == 1 ) echo $this->__('active')?>">
+									<?php echo $upsell_products; ?>
+								</div>
+							<?php } ?>
+							<script>
+							jQuery(document).ready(function($) {
+								$('.slider-re-up').owlCarousel({
+									pagination: false,
+									center: false,
+									nav: true,
+									//loop: false,
+									margin: 30,
+									navText: [ 'prev', 'next' ],
+									slideBy: 1,
+									autoplay: false,
+									autoplayTimeout: 2500,
+									autoplayHoverPause: true,
+									autoplaySpeed: 800,
+									startPosition: 1,
+									responsive:{
+										0:{
+											items:1
+										},
+										480:{
+											items:2
+										},
+										768:{
+											items:3
+										},
+										1200:{
+											items:4
+										}
+									}
+								});	  
+							});	
+					</script>			
+						</div>
+				</div>	
+			</div>
+			<?php } ?>
+			<div class="box-3">
+				<?php echo $this->getChildHtml('block-bottom'); ?>
+			</div>
+			<script type="text/javascript">
+			//<![CDATA[
+				var productAddToCartForm = new VarienForm('product_addtocart_form');
+				productAddToCartForm.submit = function(button, url) {
+					if (this.validator.validate()) {
+						var form = this.form;
+						var oldUrl = form.action;
+
+						if (url) {
+						   form.action = url;
+						}
+						var e = null;
+						try {
+							this.form.submit();
+						} catch (e) {
+						}
+						this.form.action = oldUrl;
+						if (e) {
+							throw e;
+						}
+
+						if (button && button != 'undefined') {
+							button.disabled = true;
+						}
+					}
+				}.bind(productAddToCartForm);
+
+				productAddToCartForm.submitLight = function(button, url){
+					if(this.validator) {
+						var nv = Validation.methods;
+						delete Validation.methods['required-entry'];
+						delete Validation.methods['validate-one-required'];
+						delete Validation.methods['validate-one-required-by-name'];
+						// Remove custom datetime validators
+						for (var methodName in Validation.methods) {
+							if (methodName.match(/^validate-datetime-.*/i)) {
+								delete Validation.methods[methodName];
+							}
+						}
+
+						if (this.validator.validate()) {
+							if (url) {
+								this.form.action = url;
+							}
+							this.form.submit();
+						}
+						Object.extend(Validation.methods, nv);
+					}
+				}.bind(productAddToCartForm);
+			//]]>
+			</script>
+            
+		</div>
+	</div>
+</div>

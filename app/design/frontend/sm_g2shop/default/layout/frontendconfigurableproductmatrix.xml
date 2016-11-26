@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <PRODUCT_TYPE_configurable>
+		<reference name="product.info">
+			<block type="frontendconfigurableproductmatrix/product_view_matrix" name="configurable.product.matrix" as="matrix">
+				<action method="addToParentGroup"><group>detailed_info</group></action>
+				<action method="setTitle" translate="value"><value>Product Matrix</value></action>
+				<block type="catalog/product_view_options" name="configurable.product.matrix.options" as="configurable_matrix_options" template="frontendconfigurableproductmatrix/options.phtml">
+					<action method="addOptionRenderer"><type>text</type><block>catalog/product_view_options_type_text</block><template>frontendconfigurableproductmatrix/options/text.phtml</template></action>
+					<action method="addOptionRenderer"><type>file</type><block>catalog/product_view_options_type_file</block><template>frontendconfigurableproductmatrix/options/file.phtml</template></action>
+					<action method="addOptionRenderer"><type>date</type><block>catalog/product_view_options_type_date</block><template>catalog/product/view/options/type/date.phtml</template></action>
+					<action method="addOptionRenderer"><type>select</type><block>frontendconfigurableproductmatrix/product_view_options_select</block><template>frontendconfigurableproductmatrix/options/select.phtml</template></action>
+				</block>
+			</block>
+			<!--<action method="unsetChild" ifconfig="easy_tabs/general/matrixtabbed"><name>matrix</name></action>-->
+		</reference>
+		<reference name="product.info.options">
+			<action method="setTemplate"><template>frontendconfigurableproductmatrix/type/options.phtml</template></action>
+		</reference>
+		<!--<reference name="product.info.tabs">
+			<action method="addTab" translate="title" module="frontendconfigurableproductmatrix" ifconfig="easy_tabs/general/matrixtabbed"><alias>matrix_tabbed</alias><title>Product Matrix</title><block>frontendconfigurableproductmatrix/product_view_matrix</block><template>frontendconfigurableproductmatrix/tab.phtml</template></action>
+		</reference>-->
+		<reference name="product.info.options.configurable">
+			<action method="setTemplate"><template>frontendconfigurableproductmatrix/type/configurable.phtml</template></action>
+			<block type="frontendconfigurableproductmatrix/product_view_matrix" name="configurable.product.fmatrix" as="fmatrix">
+				<block type="catalog/product_view_options" name="configurable.product.matrix.options" as="configurable_matrix_options" template="frontendconfigurableproductmatrix/options.phtml">
+					<action method="addOptionRenderer"><type>text</type><block>catalog/product_view_options_type_text</block><template>frontendconfigurableproductmatrix/options//text.phtml</template></action>
+                    <action method="addOptionRenderer"><type>file</type><block>catalog/product_view_options_type_file</block><template>frontendconfigurableproductmatrix/options//file.phtml</template></action>
+					<action method="addOptionRenderer"><type>date</type><block>catalog/product_view_options_type_date</block><template>catalog/product/view/options/type/date.phtml</template></action>
+					<action method="addOptionRenderer"><type>select</type><block>frontendconfigurableproductmatrix/product_view_options_select</block><template>frontendconfigurableproductmatrix/options/select.phtml</template></action>
+				</block>
+			</block>
+		</reference>
+		<reference name="product.info.options.wrapper">
+			<block type="frontendconfigurableproductmatrix/product_view_matrix" name="dcpm" as="dcpm" before="product.info.options.configurable" template="frontendconfigurableproductmatrix/dcpm/configurable.phtml"/>
+		</reference>
+	</PRODUCT_TYPE_configurable>   
+	<catalog_category_layered>
+        <label>FCPM Listing Page</label> 
+		<reference name="product_list"> 
+			<action method="setTemplate"><template>frontendconfigurableproductmatrix/product/list.phtml</template></action>
+				<!--<block type="catalog/product_view_options" name="configurable.product.matrix.list.options" as="matrix.list" template="frontendconfigurableproductmatrix/options.phtml">
+					<action method="addOptionRenderer"><type>text</type><block>catalog/product_view_options_type_text</block><template>frontendconfigurableproductmatrix/options/text.phtml</template></action>
+					<action method="addOptionRenderer"><type>file</type><block>catalog/product_view_options_type_file</block><template>frontendconfigurableproductmatrix/options/file.phtml</template></action>
+					<action method="addOptionRenderer"><type>date</type><block>catalog/product_view_options_type_date</block><template>catalog/product/view/options/type/date.phtml</template></action>
+					<action method="addOptionRenderer"><type>select</type><block>frontendconfigurableproductmatrix/product_view_options_select</block><template>frontendconfigurableproductmatrix/options/select.phtml</template></action>
+				</block>-->
+		</reference> 
+    </catalog_category_layered> 
+	<!-- <FCPM_PRODUCT_LISTING_LAYOUT>
+		<reference name="product_list">
+			<action method="setTemplate"><template>frontendconfigurableproductmatrix/product/list.phtml</template></action>
+			<action method="setIsHandle"><applied>1</applied></action>
+		</reference>  
+	</FCPM_PRODUCT_LISTING_LAYOUT> -->
+</layout> 

@@ -1,0 +1,140 @@
+<?php
+$pageName = $this->getRequest()->getControllerName();
+if($pageName=="category")
+{
+    $isEnabled = Mage::getStoreConfig('optionswatches/image/enabled',Mage::app()->getStore() == 1);
+}
+if($pageName=="product")
+{
+    $isEnabled = Mage::getStoreConfig('optionswatches/image/view_enabled',Mage::app()->getStore() == 1);
+}
+
+if($isEnabled == 1)
+{
+    $hkswatches = $this->get_option_swatches();
+?>
+
+<script type="text/javascript">
+	document.observe('dom:loaded', function() {
+		try {
+			var swatches = <?php echo Mage::helper('core')->jsonEncode($hkswatches); ?>;
+		
+			function find_swatch(key, value) {
+				for (var i in swatches) {
+					if (swatches[i].key == key && swatches[i].value == value)
+						return swatches[i];
+				}
+				return null;
+			}
+		
+			function has_swatch_key(key) {
+				for (var i in swatches) {
+					if (swatches[i].key == key)
+						return true;
+				}
+				return false;
+			}
+		
+			function create_swatches(label, select) {
+				var sw = new Element('div', {'class': 'swatches-container'});
+				if(select)
+                                    select.up().appendChild(sw);
+			
+				select.swatchLabel = label;
+				select.swatchElement = sw;
+			
+				select.setStyle({position: 'absolute', top: '-9999px'})
+			
+				$A(select.options).each(function(opt, i) {
+					if (opt.getAttribute('value')) {
+						var elm;
+						var key = trim(opt.innerHTML);
+					
+						if (opt.getAttribute('price')) key = trim(key.replace(/\+([^+]+)$/, ''));
+					
+						var item = find_swatch(label, key);
+						if (item)
+							elm = new Element('img', {
+								src: '<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_MEDIA); ?>hk_option_swatches/'+item.img, 
+								alt: opt.innerHTML, 
+								title: opt.innerHTML, 
+								'class': 'swatch-img'});
+						else {
+							console.debug(label, key, swatches);
+							elm = new Element('a', {'class': 'swatch-span'});
+							elm.update(opt.innerHTML);
+						}
+						elm.observe('click', function(event) {
+							select.selectedIndex = i;
+							fireEvent(select, 'change');
+							var cur = sw.down('.current');
+							if (cur) cur.removeClassName('current');
+							elm.addClassName('current');
+						});
+						sw.appendChild(elm);
+					}
+				});
+			}
+		
+			function recreate_swatches_recursive(select) {
+				if (select.swatchElement) {
+					select.up().removeChild(select.swatchElement);
+					select.swatchElement = null;
+				}
+			
+				if (!select.disabled){
+                                    create_swatches(select.swatchLabel, select);
+                                }
+			
+				if (select.nextSetting){
+                                    recreate_swatches_recursive(select.nextSetting);
+                                }
+			}
+		
+			function fireEvent(element,event){
+				if (document.createEventObject){
+					var evt = document.createEventObject();
+					return element.fireEvent('on'+event,evt)
+				}
+				else{
+					var evt = document.createEvent("HTMLEvents");
+					evt.initEvent(event, true, true );
+					return !element.dispatchEvent(evt);
+				}
+			}
+		
+			function trim(str) {
+				return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+			}
+		
+		
+			$$('#product-options-wrapper dt').each(function(dt) {
+				var label = '';
+				$A(dt.down('label').childNodes).each(function(node) {
+					if (node.nodeType == 3) label += node.nodeValue;
+				});
+				label = trim(label);
+			
+				var dd = dt.next();
+				var select = dd.down('select');
+				
+				if (select && has_swatch_key(label)) {
+					create_swatches(label, select);
+				
+					if (select.hasClassName('super-attribute-select')) {
+						select.observe('change', function() {
+							setTimeout(function() {
+								recreate_swatches_recursive(select.nextSetting);
+							}, 100);
+						});
+					}
+				}
+			});
+		}
+		catch(e) {
+			alert("Option Swatches javascript error. Please report this error to hkpatel201@gmail.com. Error:" + e.message);
+		}
+	});
+</script>
+<?php } ?>
+<div style="display: none;"><p style="display: none;">For info and support <a target="_blank" href="http://hkpatel201.blogspot.com/2015/01/product-custom-option-pro-with-optionswatch.html">Product Custom Option (Pro) with Option Swatches</a></p></div>

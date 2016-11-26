@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+		<HTZ_Vendor>
+			<active>true</active>
+			<codePool>local</codePool>
+			<depends>
+				<Mage_Adminhtml />
+				<Mage_Catalog />
+				<Mage_Sales />
+			</depends>
+		</HTZ_Vendor>
+	</modules>
+</config>

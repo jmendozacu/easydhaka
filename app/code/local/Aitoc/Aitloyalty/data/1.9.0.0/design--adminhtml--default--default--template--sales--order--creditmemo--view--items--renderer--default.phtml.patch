@@ -1,0 +1,27 @@
+diff -aurBb
+--- E:/__AITOC__/projects/2014/MHE-466-57703__lp_bugfix/patch1/1.8.1.0/orig/default.phtml	Thu Dec 12 08:57:57 2013
++++ E:/__AITOC__/projects/2014/MHE-466-57703__lp_bugfix/patch1/1.8.1.0/modif/default.phtml	Thu Feb 20 11:53:18 2014
+@@ -237,7 +237,23 @@
+     <?php endif; ?>
+ </td>
+ <td class="a-right"><?php echo $this->displayPriceAttribute('tax_amount') ?></td>
++<?php /*
+ <td class="a-right"><?php echo $this->displayPriceAttribute('discount_amount') ?></td>
++     */ ?>
++<? if (strpos($this->displayPriceAttribute('discount_amount'), '$0') > 0)
++{
++    $newDiscount = $this->displayPriceAttribute('discount_amount');
++}
++else if (strpos($this->displayPriceAttribute('discount_amount'), '-') > 0)
++{
++    $newDiscount = str_replace(array('>-$','[-'), array('>+$','[+'), $this->displayPriceAttribute('discount_amount'));
++}
++else
++{
++    $newDiscount = str_replace(array('>$','['), array('>-$','[-'), $this->displayPriceAttribute('discount_amount'));
++}
++?>
++<td class="a-right"><?php echo $newDiscount ?></td>
+ <td class="a-right last">
+     <?php echo $this->displayPrices(
+         $_item->getBaseRowTotal() + $_item->getBaseTaxAmount() + $_item->getBaseHiddenTaxAmount() + Mage::helper('weee')->getBaseRowWeeeAmountAfterDiscount($_item) - $_item->getBaseDiscountAmount(),

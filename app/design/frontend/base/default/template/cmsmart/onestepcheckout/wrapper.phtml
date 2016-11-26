@@ -1,0 +1,110 @@
+<script type="text/javascript">countryRegions = <?php echo $this->helper('directory')->getRegionJson() ?></script>
+<?php
+$package = Mage::getDesign()->getPackageName();
+$theme = Mage::getDesign()->getTheme('frontend');
+$store_id=Mage::app()->getStore()->getStoreId();
+?>
+<div class="onestepcheckout-wrapper-onestepcheckout design_package_<?php echo $package;?> design_theme_<?php echo $theme;?> 
+<?php echo Mage::getStoreConfig('onestepcheckout/global/style_layout',$store_id);?>">
+	
+	<div style="border-bottom: 1px solid #ebebeb;" class="nbonestepcheckout">
+	<span class="title-page"><?php echo Mage::getStoreConfig('onestepcheckout/global/title',$store_id);?></span>
+	<a href="<?php echo Mage::getBaseUrl(); ?>">Continue Shopping</a>
+	
+	</div>
+	<p class="mes"><?php echo $this->__('Please fill in the fields below to complete your order.')?></p>
+	
+	<?php if (!Mage::getSingleton('customer/session')->isLoggedIn()):?>
+		<?php echo $this->getChildHtml('login');?>	
+	<?php endif;?>
+	<div class="clear"></div>
+
+    <div class="onestepcheckout-col-left">
+		<div class="billing-block nbcheckout-block">
+			<form id="onestepcheckout-address-form-billing" method="post">
+	        	<?php echo $this->getChildHtml('billing')?>
+	        </form>
+		</div>
+		<div class="nbshipping-block ">
+			<form id="onestepcheckout-address-form-shipping" class="hidden" method="post">
+	        <?php echo $this->getChildHtml('shipping')?>
+	        </form>
+		</div>      	
+        
+		
+    </div>
+
+    <div class="onestepcheckout-col-center">
+    	
+    	<?php if (!$this->getOnepage()->getQuote()->isVirtual()):?>
+    	<div class="shipping-block nbcheckout-block">
+        	<h3><?php echo $this->__('Shipping Method')?></h3>
+        	<div id="shipping-block-methods">
+				<?php echo $this->getChildHtml('shipping_method');?>
+			</div>
+		</div>
+		<?php endif;?>
+		<div class="ship-deli">
+			<?php if(Mage::helper('onestepcheckout')->isDeliveryEnable()):?>
+	    	<div class="deliverydate-block nbcheckout-block">
+	        	<h3><?php echo $this->__('Delivery Time')?></h3>
+	        	<div id="deliverydate-block-content">
+					<?php echo $this->getChildHtml('deliverydate');?>
+				</div>
+			</div>
+			<?php endif;?>
+			<div class="payment-block nbcheckout-block <?php if ($this->getOnepage()->getQuote()->isVirtual()):?>clear-margin<?php endif;?>">
+				<h3><?php echo $this->__('Payment Method')?></h3>
+				<?php echo $this->getChildHtml('payment')?>
+			</div>
+				
+    	
+    	</div>
+    		
+		
+		
+		
+
+		<div class="cmsmartpoll-block">
+			<?php //echo $this->getChildhtml('cmsmartpoll');?>
+		</div>
+
+    </div>
+
+    <div class="onestepcheckout-col-right">
+        <h3 class="nbreview-title"><?php echo $this->__('Order Review')?></h3>
+        <div id="onestepcheckout-review-block">
+		<?php echo $this->_getReviewHtml()?>
+		</div>
+		
+		
+		
+    </div>
+</div>
+<script>
+	Cmsmart.Onestepcheckout.Checkout.config = '<?php echo $this->getJsonConfig()?>';
+	<?php if ($this->getOnepage()->getQuote()->isVirtual()):?>
+	Cmsmart.Onestepcheckout.Checkout.isVirtual = true;
+	<?php endif;?>	 
+</script>
+
+<div class="onestepcheckout-ajax-loader">
+	<div id="floatingCirclesG">
+		<div class="f_circleG" id="frotateG_01"></div>
+		<div class="f_circleG" id="frotateG_02"></div>
+		<div class="f_circleG" id="frotateG_03"></div>
+		<div class="f_circleG" id="frotateG_04"></div>
+		<div class="f_circleG" id="frotateG_05"></div>
+		<div class="f_circleG" id="frotateG_06"></div>
+		<div class="f_circleG" id="frotateG_07"></div>
+		<div class="f_circleG" id="frotateG_08"></div>
+	</div>
+</div>
+<div class="onestepcheckout-message-wrapper design_package_<?php echo $package;?> design_theme_<?php echo $theme;?>">
+	
+	<div class="onestepcheckout-messages">
+		<a class="close-message-wrapper"></a>
+		<div class="onestepcheckout-message-container"></div>
+		<div class="onestepcheckout-messages-action"><button class="button"><span><span><?php echo $this->__('Close')?></span></span></button></div>
+	</div>
+</div>

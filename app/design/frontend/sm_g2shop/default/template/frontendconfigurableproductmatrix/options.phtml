@@ -1,0 +1,1103 @@
+<?php
+/**
+ * Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE_AFL.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category    design
+ * @package     base_default
+ * @copyright   Copyright (c) 2013 Magento Inc. (http://www.magentocommerce.com)
+ * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
+/* @var $this Mage_Catalog_Block_Product_View_Options */
+?>
+<?php $_options = Mage::helper('core')->decorateArray($this->getOptions()) ?>
+<?php if (count($_options)):?>
+	<?php 
+		$_product = $this->getProduct();
+		$_matrixHelper = Mage::helper('frontendconfigurableproductmatrix');
+		$_isShowRT = $_matrixHelper->isShowRowTotal($_product);
+		$_isShowGT = $_matrixHelper->isShowGrandTotal($_product);
+		$_simple = $_matrixHelper->isSimplePriceEnabled($_product);
+		$_advancedCustomOption = $_matrixHelper->isAdvancedCustomOptionEnabled();
+		$_isCptp = $_matrixHelper->isCptpEnable();
+		$_opTierPriceEnabled = false;
+		if($_advancedCustomOption){
+			$helper = $this->helper('customoptions');
+			$_opTierPriceEnabled = $helper->isTierPriceEnabled();	
+		}
+	?>
+    <div class="matrix_custom_options option">
+    <?php if($_simple):?><input type="hidden" name="customoptionprice" id="matrixCustomOptionPrice" /><?php endif;?>
+	<?php foreach($_options as $_option): ?>
+        <br />
+		<?php echo $this->getOptionHtml($_option) ?>
+        <script type="text/javascript">
+			decorateTable('product-matrix-option-<?php echo $_option->getId();?>');
+		</script>
+    <?php endforeach; ?>
+    </div>
+    
+	<style type="text/css">
+		table.product-matrix-option ul.options-list
+		{
+			list-style: none outside none;
+			margin: 0;
+			padding: 0;	
+		}
+		table.product-matrix-option tbody *{
+			font-weight:bold !important;	
+		}
+		.product-matrix-option td{
+			padding: 8px;
+		}
+		input.matrix-custom-option{margin-right: 8px;}
+		table.product-matrix-option .product-pricing, table.product-matrix-option .tier-prices {
+			background-color: #f4f7f7;
+			border: 1px solid #dadddd;
+			color: #424242;
+			margin: 10px 0;
+			padding: 10px;
+			list-style: none outside none;
+		}
+		table.product-matrix-option .qty-holder {display: block; padding: 10px 0 0;}
+		.matrix_custom_options span.note{font-size: 11px;margin: 0;font-weight:normal;}
+    </style>
+    <script type="text/javascript">
+    //<![CDATA[
+		var opMatrixConfig = <?php echo $this->getJsonConfig() ?>;
+		var opMatrixConfigTier = {};
+		var taxData = 0;
+		var opComptTier = {};
+		<?php if($_advancedCustomOption):?>
+		opMatrixConfigTier = <?php echo $helper->getOptionsJsonConfig($this->getOptions()) ?>;
+		<?php 
+			$store = Mage::app()->getStore();
+			$request = Mage::getSingleton('tax/calculation')->getRateRequest(null, null, null, $store);
+			$taxclassid = $_product->getData('tax_class_id');
+			$percent = Mage::getSingleton('tax/calculation')->getRate($request->setProductClassId($taxclassid));
+		?>
+		taxData = 1*<?php echo $percent;?>;
+		<?php endif;?>
+		
+		$$('.matrix_custom_options .matrix-custom-option').each(function(elem){
+			elem.observe('change', changeAndUpdateOptionPrice);
+		});
+		
+		function changeAndUpdateOptionPrice(){
+			var grandTotalWithOption = 0;
+			var rowOptionPrice = {};
+			$$('.matrix_custom_options .matrix-custom-option').each(function(objInput){
+				if(!objInput.up('tr.options-list')) return;
+				var $qty = objInput.up('tr.options-list').down('.matrix-total-qty');
+				var $rtotal = objInput.up('tr.options-list').down('.matrix-option-price');
+				var rTotalPrice = 0;
+				var optionId = 0;
+                objInput.name.sub(/[0-9]+/, function(match){
+                    optionId = match[0];
+                });
+				switch(objInput.type){
+					case 'radio':
+					case 'checkbox':
+						if(objInput.checked){
+							var tempCachePrice = 0;
+							if(!$qty.hasClassName('dyn')) $qty.addClassName('dyn');
+							$qty.update(totalMatrixQty);
+							tempCachePrice = desidePriceFromOption(objInput,objInput.value);
+							<?php if($_opTierPriceEnabled):?>
+								if (!$('matrix_option_tier_prices_'+objInput.value) && typeof(opMatrixConfigTier[optionId][objInput.value]['tier_prices'])!='undefined') {
+									Element.insert(objInput.up('td'), {'bottom':getMatrixOpTierPriceHTML(objInput, opMatrixConfigTier[optionId][objInput.value])});
+								}
+								rTotalPrice = tempCachePrice;
+								rowOptionPrice[optionId+objInput.value] = opComptTier[optionId+objInput.value];
+							<?php else:?>
+								rTotalPrice = (totalMatrixQty*tempCachePrice);
+								rowOptionPrice[optionId+objInput.value] = (1*parseFloat(objInput.getAttribute('price')));
+							<?php endif;?>
+						} else {
+							$qty.removeClassName('dyn');
+							$qty.update(0);
+							<?php if($_opTierPriceEnabled):?>
+								if ($('matrix_option_tier_prices_'+objInput.value)) {
+									$('matrix_option_tier_prices_'+objInput.value).remove();
+								}
+							<?php endif;?>
+						}
+					break;
+					
+					case 'select-one':
+					case 'select-multiple':
+					case 'text':
+					case 'file':
+						<?php if($_opTierPriceEnabled):?>
+							if (objInput.next('.tier-prices')) {
+								objInput.next('.tier-prices').remove();
+							}
+						<?php endif;?>
+						if(objInput.value != ''){
+							var tempCachePrice = 0;
+							if(!$qty.hasClassName('dyn')) $qty.addClassName('dyn');
+							$qty.update(totalMatrixQty);
+							if(objInput.type == 'text' || objInput.type == 'file') {
+								tempCachePrice = desidePriceFromOption(objInput,null,true);
+								<?php if($_opTierPriceEnabled):?>
+								rowOptionPrice[optionId] = opComptTier[optionId];
+								<?php else:?>
+								rowOptionPrice[optionId] = (1*opMatrixConfig[optionId].excludeTax);
+								<?php endif;?>
+							} else {
+								objInput.childElements().each(function(selOption){
+									if(selOption.selected) {
+										tempCachePrice += (1*desidePriceFromOption(objInput,selOption.value));
+										<?php if($_opTierPriceEnabled):?>
+										rowOptionPrice[optionId+selOption.value] = opComptTier[optionId+selOption.value];
+										<?php else:?>
+										rowOptionPrice[optionId+selOption.value] = (1*parseFloat(selOption.getAttribute('price')));
+										<?php endif;?>
+									}
+								});
+							}
+							<?php if($_opTierPriceEnabled):?>
+								if (!$('matrix_option_tier_prices_'+objInput.value) && typeof(opMatrixConfigTier[optionId][objInput.value]['tier_prices'])!='undefined') {
+									Element.insert(objInput.up('td'), {'bottom':getMatrixOpTierPriceHTML(objInput, opMatrixConfigTier[optionId][objInput.value])});
+								}
+								rTotalPrice = tempCachePrice;
+							<?php else:?>
+								rTotalPrice = (totalMatrixQty*tempCachePrice);
+							<?php endif;?>
+						} else {
+							$qty.removeClassName('dyn');
+							$qty.update(0);
+						}
+					break;
+				}
+				grandTotalWithOption += rTotalPrice;
+				<?php if($_isShowRT):?>if(!$rtotal.hasClassName('dont')) $rtotal.update(matrixPriceFormate(rTotalPrice));<?php endif;?>
+			});
+			<?php if($_isShowGT):?>$('matrix-grand-total').update(matrixPriceFormate(totalMatrixPrice+grandTotalWithOption));<?php endif;?>
+			<?php if($_simple):?>$('matrixCustomOptionPrice').value = sumOfObject(rowOptionPrice);<?php endif;?>
+		}
+		
+		function sumOfObject(objOp){
+			var sum = 0;
+			for(var i in objOp){
+				if(objOp.hasOwnProperty(i)){
+					sum += (1*objOp[i]);
+				}
+			}
+			return sum;
+		}
+		
+		function desidePriceFromOption(element,value,one){
+			if(typeof one == 'undefined') one = false;
+			var isIncTax = optionsPrice.includeTax;
+			var optionId = curPrice = 0;
+			var curConfig = {};
+			element.name.sub(/[0-9]+/, function(match){
+				optionId = parseInt(match[0], 10);
+			});
+			if (opMatrixConfig[optionId]) {
+				var configOptions = opMatrixConfig[optionId];
+				if (typeof configOptions[value] != 'undefined') {
+					curConfig = configOptions[value];
+					if(isIncTax == 'true'){
+						curPrice = curConfig.includeTax;
+					} else {
+						curPrice = curConfig.excludeTax;
+					}
+				}
+				if(one == true){
+					curConfig = configOptions;
+					if(isIncTax == 'true'){
+						curPrice = curConfig.includeTax;
+					} else {
+						curPrice = curConfig.excludeTax;
+					}
+				}
+			}
+			<?php if($_opTierPriceEnabled):?>
+			curPrice = calculateEachTierPrice(opMatrixConfigTier[optionId][value], curPrice, optionId+value);
+			<?php endif;?>
+			return curPrice;
+		}
+		
+		function calculateEachTierPrice(eOpData, curPrice, optionId)
+		{
+			var withTax = optionsPrice.includeTax;
+			var showTax = optionsPrice.showIncludeTax;
+			opComptTier[optionId] = curPrice;
+			if(typeof eOpData['tier_prices'] != 'undefined')
+			{
+				var tierPrices = eOpData['tier_prices'];
+				tierPricesKey = Object.keys(tierPrices).sort(function(a, b){return b-a});
+				var totalPriceTier = 0;
+				$$('input.matrix-qty').each(function(item){
+					var forCheckQty = <?php if($_isCptp):?>totalMatrixQty<?php else:?>(1*item.value)<?php endif;?>;
+					if(forCheckQty != 0){
+						var unitPriceTier = curPrice;
+						for(var tirQty in tierPricesKey)
+						{
+							if(forCheckQty >= (1*tierPricesKey[tirQty])){
+								unitPriceTier = parseFloat(tierPrices[tierPricesKey[tirQty]]);
+								opComptTier[optionId] = unitPriceTier;
+								if(withTax != 'true' && showTax == true) unitPriceTier = parseFloat(unitPriceTier*(1+(taxData/100)));
+								break;	
+							}
+						}
+						totalPriceTier <?php if($_isCptp):?>=<?php else:?>+=<?php endif;?> (unitPriceTier*forCheckQty);
+					}
+				});
+				return totalPriceTier;
+			}
+			return (curPrice*totalMatrixQty);
+		}
+		
+		
+		var optionMatrixImages = {
+            ulId: ['div.product-img-box div.more-views ul', 'div.img-box div.more-images ul'],
+            mainImageUrl: '',
+            mainImageThumbnail: '',
+            mainImageTitle: '',
+            mainImageWidth: 240,
+            newMainImageUrl: '',
+            newMainImageThumbnail: '',
+            newMainImageTitle: '',
+            prevMainImageUrl: '',
+            overlayZIndex: 80,
+            pageLoaded: false,
+            
+            
+            showImage: function(el) {
+                if (!el || !el.id) return;
+                
+                var elIdArr = el.id.split('_');
+                var optionId = 0;
+                if (elIdArr[2]) optionId = elIdArr[2];
+                
+                var elValueArr = [];                    
+                if (el.multiple) {
+                    for (i=0; i < el.options.length; i++) {
+                        if (el.options[i].selected) elValueArr.push(el.options[i].value);
+                    }
+                } else {
+                    elValueArr.push(el.value);
+                }
+                
+                if (!opMatrixConfigTier[optionId]) return;
+                var imageHTML = '';
+                
+                var imageMode = opMatrixConfigTier[optionId].image_mode;
+                var excludeFirstImage = opMatrixConfigTier[optionId].exclude_first_image;
+				
+				if (imageMode==1) {
+                    // beside option variant
+                    var imageBox = $('matrixcustomoptions_images_' + optionId);
+                    if (!imageBox) return;
+                    
+                    imageBox.hide();
+                    elValueArr.each(function(optionValueId) {
+                        if (optionValueId!='' && opMatrixConfigTier[optionId][optionValueId] && opMatrixConfigTier[optionId][optionValueId].images) {
+                            opMatrixConfigTier[optionId][optionValueId].images.each(function(image) {
+                                if (image[1]) {
+                                    imageHTML += '<a href="'+image[1]+'" rel="mageworxLightbox[]" title="">'+
+                                        '<img src="'+image[0]+'" title="" class="small-image-preview v-middle" />'+
+                                    '</a>';
+                                } else {
+                                    imageHTML += '<div class="container-swatch-color small-image-preview v-middle"">'+
+                                        '<div class="swatch-color" style="background:' + image[0] + ';">&nbsp;</div>'+
+                                    '</div>';
+                                }
+                            }.bind(this));
+                        }
+                    }.bind(this));
+                    imageBox.innerHTML = imageHTML;
+                    imageBox.show();
+                } else if (imageMode==4) {
+                    // Overlay Main Image
+                    var mainImage = this.getMainImage();
+                    if (mainImage) {
+                        if (!mainImage.src) {
+                            mainImage = mainImage.down('img');
+                            if (!mainImage) return;
+                    	}
+                        // remove prev overlay_image
+                        if (el.type=='radio') {
+                            var radios = el.up(2).getElementsByClassName('radio');
+                            for (i=0; i < radios.length; i++) {
+                                if (!radios[i].checked) {
+                                    var overlayImage = $('overlay_image_' + radios[i].value);
+                                    if (overlayImage) overlayImage.remove();
+                                }
+                            }
+                        } else if (el.type=='checkbox') {
+                            if (!el.checked) {
+                                var overlayImage = $('overlay_image_' + el.value);
+                                if (overlayImage) overlayImage.remove();
+                            }
+                        } else {
+                            // drop-down, multiselect
+                            for (i=0; i < el.options.length; i++) {
+                                if (!el.options[i].selected && el.options[i].value) {
+                                    var overlayImage = $('overlay_image_' + el.options[i].value);
+                                    if (overlayImage) overlayImage.remove();
+                                }
+                            }
+                        }
+
+                        if (((el.type=='checkbox' || el.type=='radio') && el.checked && !el.disabled) || ((el.type=='select-one' || el.type=='select-multiple') && el.value!='')) {
+                            // overlay option image
+                            elValueArr.each(function(optionValueId) {
+                                if (optionValueId!='' && opMatrixConfigTier[optionId][optionValueId] && opMatrixConfigTier[optionId][optionValueId].images) {
+                                    opMatrixConfigTier[optionId][optionValueId].images.each(function(image, index) {
+                                        if (((excludeFirstImage==0 && index==0) || index > 0) && image[1]) {
+                                            var overlayImageId = 'overlay_image_' + optionValueId;
+                                            var overlayImage = $(overlayImageId);
+                                            if (!overlayImage) {
+                                                mainImage.up(1).style.position = 'relative';
+                                                
+                                                var overlayImage = new Image();
+                                                overlayImage.width = mainImage.width;
+                                                overlayImage.height = mainImage.height;
+                                                overlayImage.style.display = 'none';
+                                                overlayImage.style.position = 'absolute';
+                                                overlayImage.style.top = 0;
+                                                overlayImage.style.left = 0;
+                                                overlayImage.style.zIndex = this.overlayZIndex;
+                                                this.overlayZIndex++;
+                                                overlayImage.id = overlayImageId;
+                                                overlayImage.src = image[1];
+                                                Element.insert(mainImage, {'after':overlayImage});
+                                                overlayImage.show();
+                                            }
+                                        }
+                                    }.bind(this));
+                                }
+                            }.bind(this));
+                        }
+                    }
+                } else {
+                    // replace variant
+                    var ul = $$(this.ulId.join(', ')).first();
+                    var liClass = 'option-image-'+optionId;
+                    if (el.type=='checkbox') liClass += '-' + el.value;
+                    
+                    // hide product gallery
+                    if (imageMode==2) {
+                        $$(this.ulId.join(' li.li-product-image, ') + ' li.li-product-image').each(function(li) {
+                            li.hide();
+                        });
+                    }
+                    
+                    // remove option images
+                    $$('li.' + liClass).each(function(li) {
+                        li.remove();
+                    });
+                    
+                    // set default main image
+                    this.newMainImageUrl = this.mainImageUrl;
+                    this.newMainImageTitle = this.mainImageTitle;
+                    this.newMainImageThumbnail = this.mainImageThumbnail;
+                    
+                    if (((el.type=='checkbox' || el.type=='radio') && el.checked && !el.disabled) || ((el.type=='select-one' || el.type=='select-multiple') && el.value!='')) {
+                        var liHtml = '';
+                        if (ul) {
+                            var li = ul.down('li');
+                            if (li) {
+                                liHtml = ul.down('li').innerHTML;
+                                liHtml = liHtml.replace(/https?\:\/\/.+?([\'\"])/,"{{big_image_url}}$1");
+                                liHtml = liHtml.replace(/https?\:\/\/.+?([\'\"])/g,"{{small_image_url}}$1");
+                                liHtml = liHtml.replace(/(\s(?:title|alt)\=[\'\"]).*?([\'\"])/g,"$1{{title}}$2");
+                                liHtml = '<li class="' + liClass + '">' + liHtml + '</li>';
+                            }
+                        }
+                        
+                        var imageBox = $('customoptions_images_' + optionId);
+                        if (imageBox) imageBox.hide();
+
+                        // append option images
+                        elValueArr.each(function(optionValueId) {
+                            
+                            if (optionValueId!='' && opMatrixConfigTier[optionId][optionValueId] && opMatrixConfigTier[optionId][optionValueId].images) {
+                                opMatrixConfigTier[optionId][optionValueId].images.each(function(image, index) {
+                                    if ((excludeFirstImage==0 && index==0) || index > 0) {
+                                        if (liHtml) {
+                                            if (image[1]) imageHTML += liHtml.replace(new RegExp("{{big_image_url}}",'g'), image[1]).replace(new RegExp("{{small_image_url}}",'g'), image[0]).replace(new RegExp("{{title}}",'g'), opMatrixConfigTier[optionId][optionValueId].title);
+                                        } else {
+                                            if (index==0 || (excludeFirstImage==1 && index==1)) {
+                                                this.newMainImageUrl = image[1];
+                                                this.newMainImageThumbnail = image[1];
+                                                this.newMainImageTitle = opMatrixConfigTier[optionId][optionValueId].title;
+                                            }
+                                        }
+                                    } else if (el.type=='select-one' || el.type=='select-multiple') {
+                                        if (imageBox) {                    
+                                            imageBox.hide();
+                                            imageBox.innerHTML = '<a href="'+image[1]+'" rel="mageworxLightbox[]" title="">'+
+                                                '<img src="'+image[0]+'" title="" class="small-image-preview v-middle" />'+
+                                            '</a>';;
+                                            imageBox.show();
+                                        }
+                                    }
+                                }.bind(this));
+                            }
+                        }.bind(this));
+                        if (imageHTML) ul.innerHTML += imageHTML;
+                    }
+                    
+                    // show product gallery
+                    if (!this.hasOptionImages()) {
+                        $$(this.ulId.join(' li.li-product-image, ') + ' li.li-product-image').each(function(li) {
+                            li.show();
+                        });
+                    }
+                    
+                    $$('.cloud-zoom-gallery').each(function(a) { 
+                        if (a.up('li').style.display=='') a.up('li').style.display = 'list-item';
+                    });
+                    // change main image
+                    if (imageMode==2) this.changeMainImage();
+                    
+                }
+            },
+            markProduct: function() {
+                $$(this.ulId.join(' li, ') + ' li').each(function(li) {
+                    li.addClassName('li-product-image');
+                });
+                
+                if (this.mainImageUrl=='') {
+                    var mainImage = this.getMainImage();
+                    if (mainImage) {
+                    	if (mainImage.hasClassName('MagicToolboxContainer')) {
+                            var elA = mainImage.down('a');
+                            if (elA) {
+                                this.mainImageUrl = elA.href;
+                                var elImg = elA.down('img');
+                                if (elImg.width) this.mainImageWidth = elImg.width;
+                                this.mainImageThumbnail = elImg.src;
+                                this.mainImageTitle = elImg.alt;
+                            }
+                        } else if (mainImage.hasClassName('zoom-image') || (mainImage.up('a') && mainImage.up('a').hasClassName('cloud-zoom'))) {
+                            // Easy Zoom 1.0 - jQuery plugin
+                            // Cloud Zoom V1.0.2
+                            var elA = mainImage.up('a');
+                            if (elA) {
+                                this.mainImageUrl = elA.href;
+                            } else {
+                                this.mainImageUrl = mainImage.src;
+                            }
+                            this.mainImageTitle = mainImage.alt;
+                            this.mainImageThumbnail = mainImage.src
+                        } else {
+                            this.mainImageUrl = mainImage.src;
+                            this.mainImageTitle = mainImage.alt;
+                    	}
+                    }
+                }
+                this.prevMainImageUrl = this.mainImageUrl;
+            },
+            getMainImage: function() {
+                return $$('div.product-img-box div.MagicToolboxContainer', 'div.product-img-box div.main-image img', 'div.product-img-box .product-image img', '#image', 'div.img-box .product-image img').first();
+            },
+            changeMainImage: function() {
+                if (!this.newMainImageUrl || this.newMainImageUrl==this.prevMainImageUrl) return;
+                var mainImage = this.getMainImage();
+                if (!mainImage) return;
+                
+                if (!this.pageLoaded) {
+                    mainImage.hide();
+                    setTimeout('optionImages.changeMainImage()', 100);
+                    return;
+                }
+                if (mainImage.hasClassName('MagicToolboxContainer')) {
+                    var elA = mainImage.down('a');
+                    if (elA) {
+                    	elA.down('img').width = this.mainImageWidth;
+                    	MagicZoomPlus.update(elA.id, this.newMainImageUrl, this.newMainImageThumbnail, 'show-title: false; drag-mode: false');
+                    }
+                } else if (mainImage.hasClassName('zoom-image')) {
+                    //  Easy Zoom 1.0 - jQuery plugin
+                    var elA = mainImage.up('a');
+                    if (elA) elA.href = this.newMainImageUrl;
+                    mainImage.src = this.newMainImageUrl;
+                    mainImage.alt = this.newMainImageTitle;
+                    mainImage.title = this.newMainImageTitle;                	
+                    jQuery('#zoom').easyZoom({parent: 'div.zoom-container',	preload: '', lightboxBtn: '.lightbox-btn .lightbox'}).data('easyZoom').gallery('a.zoom-thumbnail');
+                } else if (mainImage.up('a') && mainImage.up('a').hasClassName('cloud-zoom')) {
+                    // ultimo + Cloud Zoom V1.0.2
+                    var elA = mainImage.up('a');
+                    if (elA) elA.href = this.newMainImageUrl;
+                    mainImage.src = this.newMainImageUrl;
+                    mainImage.alt = this.newMainImageTitle;
+                    mainImage.title = this.newMainImageTitle;
+                    
+                    if ($("zoom-btn")) {
+                        $("zoom-btn").href = this.newMainImageUrl;
+                        $("zoom-btn").title = this.newMainImageTitle;
+                    }
+                    jQuery("#"+elA.id).CloudZoom();
+                    
+                    $$('.cloud-zoom-gallery').each(function(a) { 
+                        a.addClassName('cboxElement');
+                        jQuery(a).CloudZoom();
+                    });
+                    
+                } else {
+                    mainImage.src = this.newMainImageUrl;
+                    mainImage.alt = this.newMainImageTitle;
+                    mainImage.title = this.newMainImageTitle;
+                }
+                this.prevMainImageUrl = this.newMainImageUrl;
+                mainImage.show();
+            },
+            hasOptionImages: function() {
+                var result = false;
+                var firstImageUrl = '';
+                
+                $$(this.ulId.join(' li, ') + ' li').each(function(li) {
+                    if (li.hasClassName('li-product-image')==false) {
+                        // change main image
+                        if (!firstImageUrl) {
+                            var firstImageMatch = li.innerHTML.match(/(https?\:\/\/.+?)[\'\"]/);
+                            if (firstImageMatch) firstImageUrl = firstImageMatch[1];
+                            this.newMainImageUrl = firstImageUrl;
+                            this.newMainImageThumbnail = firstImageUrl;
+                            this.newMainImageTitle = li.down('img').alt;
+                        }
+                        result = true;
+                    }
+                }.bind(this));
+                return result;
+            }
+        };
+		
+		<?php if($_advancedCustomOption):?>
+			<?php if ($_opTierPriceEnabled) { ?>
+			function getMatrixOpTierPriceHTML(el, opConfig) {
+				var opPrice = parseFloat(opConfig['price']);
+				var tierPrice = 0;
+				var tierSaved = 0;
+				var tierHTML = '<ul id="matrix_option_tier_prices_'+el.value+'" class="tier-prices product-pricing" style="width:250px;">';
+				for (var tierQty in opConfig['tier_prices']) {
+					if (!opConfig['tier_prices'].hasOwnProperty(tierQty)) continue;
+					tierPrice = opConfig['tier_prices'][tierQty];
+					if(optionsPrice.includeTax != 'true' && optionsPrice.showIncludeTax == true) tierPrice = tierPrice*(1+(taxData/100));
+					tierSaved = parseInt(100 - ((parseFloat(tierPrice) * 100) / opPrice));
+					tierHTML += '<li><?php echo $helper->__js('Buy') ?> '+tierQty+' <?php echo $helper->__js('for') ?> <span class="price">'+matrixPriceFormate(tierPrice)+'</span> <?php echo $helper->__js('each') ?> <?php echo $helper->__js('and') ?> <strong class="benefit"><?php echo $helper->__js('save') ?> '+tierSaved+'%</strong></li>';
+				}
+				tierHTML += '</ul>';
+				return tierHTML;
+			}
+			<?php } ?>
+		
+		<?php if ($helper->isDependentEnabled()) { ?>
+            
+			// set qty product from option
+        var optionSetQtyProductMatrix = {
+            setQty: function() {
+                if (!$('qty')) {
+                    setTimeout('optionSetQtyProductMatrix.setQty()', 500);
+                    return;
+                }                
+                var totalQty = 0;
+                var elArr = $$("input[id^='options_']:checked", "select[id^='select_']");
+                
+                if (elArr.length>0) {
+                    elArr.each(function(el) {
+                        var elIdArr = el.id.split('_');
+                        var optionId = 0;
+                    	if (elIdArr[1]) optionId = elIdArr[1];
+                        
+                        var elValueArr = [];
+                        if (el.multiple) {
+                            for (i=0; i < el.options.length; i++) {
+                                if (el.options[i].selected) elValueArr.push(el.options[i].value);
+                            }
+                        } else {
+                            elValueArr.push(el.value);
+                        }
+                        elValueArr.each(function(valueId) {
+                            if (optionId && opConfig.config[optionId] && opConfig.config[optionId][valueId] && opConfig.config[optionId][valueId].x_qty) {
+                                if ($('options_'+optionId+'_qty')) {
+                                    var optionQty = parseInt($('options_'+optionId+'_qty').value);
+                                } else if ($('options_'+optionId+'_'+valueId+'_qty')) {
+                                    var optionQty = parseInt($('options_'+optionId+'_' + valueId + '_qty').value);
+                                } else {
+                                    var optionQty = 1;
+                                }
+                                totalQty += opConfig.config[optionId][valueId].x_qty * optionQty;
+                            }
+                        }.bind(this));
+                    }.bind(this));
+                }
+                if (totalQty==0) totalQty = 1;
+                if ($('qty').value!=totalQty) this.setTotalQty(totalQty);                
+            },
+            setTotalQty: function(qty) {
+                var minimalQty = <?php echo intval($this->getParentBlock()->getProductDefaultQty()) ?>;
+                if (minimalQty>0 && minimalQty>qty) qty = minimalQty;
+                $('qty').value = qty;
+                opConfig.reloadPrice();
+            },
+            hideQty: function() {
+                if (!$('qty')) {
+                    setTimeout('optionSetQtyProductMatrix.hideQty()', 100);
+                    return;
+                }                
+                //$('qty').previous('label').style.visibility = 'hidden';
+                //$('qty').style.visibility = 'hidden';
+                $('qty').writeAttribute('readonly', 'readonly');
+            },
+            checkboxQty: function(el) {
+                var elIdArr = el.id.split('_');
+                var optionId = 0;
+                if (elIdArr[1]) optionId = elIdArr[1];
+                
+                var elQty = $('options_'+ optionId +'_'+ el.value +'_qty');
+                if (!elQty) return;
+                elQty.disabled=!el.checked;
+                
+                if (el.checked) {
+                    if (elQty.value<=0) elQty.value = 1;
+                    $(elQty).addClassName('validate-greater-than-zero');
+                } else {
+                    elQty.value = 0;
+                    $(elQty).removeClassName('validate-greater-than-zero');
+                }
+            },
+            multiSwatchQty: function(optionId, valueId, selected) {
+                var elQty = $('options_'+ optionId +'_'+ valueId +'_qty');
+                if (!elQty) return;
+                elQty.disabled = !selected;
+                
+                if (selected) {
+                    if (elQty.value<=0) elQty.value = 1;
+                    $(elQty).addClassName('validate-greater-than-zero');
+                } else {
+                    elQty.value = 0;
+                    $(elQty).removeClassName('validate-greater-than-zero');
+                }
+            },
+            // limit qty functions:
+            limitQtyData: {},
+            setLimitQty: function(el) {
+                var elIdArr = el.id.split('_');
+                var optionId = 0;
+                if (elIdArr[1]) optionId = elIdArr[1];
+
+                var elValueArr = [];
+                if (el.multiple) {
+                    for (i=0; i < el.options.length; i++) {
+                        if (el.options[i].selected) elValueArr.push(el.options[i].value);
+                    }
+                } else {
+                    elValueArr.push(el.value);
+                }
+                elValueArr.each(function(valueId) {
+                    if (optionId && opConfig.config[optionId] && opConfig.config[optionId][valueId] && opConfig.config[optionId][valueId].l_qty) {
+                        var limit = parseInt(opConfig.config[optionId][valueId].l_qty);
+                        if (dependentMatrixOptions && dependentMatrixOptions.dependentData[valueId]) {
+                            dependentMatrixOptions.dependentData[valueId].each(function(IGI){
+                                if (dependentMatrixOptions.inGroupIdData[IGI]) {
+                                    for(var dElementId in dependentMatrixOptions.inGroupIdData[IGI]) {
+                                        if (dElementId!='dependency' && dElementId!='out_of_stock' && dElementId!='view_mode' && $(dElementId)) {
+                                            var elIdArr = dElementId.split('_');
+                                            var dOptionId = 0;
+                                            if (elIdArr[1]) dOptionId = elIdArr[1];
+                                            this.limitQtyData[dOptionId] = limit; // set limit
+                                            this.checkLimitQty(dOptionId);
+                                        }
+                                    }
+                                }
+                            }.bind(this));
+                        }
+                    }
+                }.bind(this));
+            },
+            checkLimitQty: function(optionId, changedEl) {
+                if (!optionId) return;
+                
+                var limit = 0;
+                if (this.limitQtyData[optionId]) limit = this.limitQtyData[optionId];
+                if (opConfig.config[optionId] && opConfig.config[optionId].max_characters) {
+                    if (limit==0 || limit>opConfig.config[optionId].max_characters) limit = opConfig.config[optionId].max_characters;
+                }
+                if (limit==0) return;
+                
+                var totalQty = 0;
+                var elArr = $$("input[id^='options_"+ optionId +"_']:checked", "select[id='select_"+ optionId +"']", "textarea[id='options_"+ optionId +"_text']", "input[id='options_"+ optionId +"_text']");
+                
+                if (elArr.length>0) {
+                    elArr.each(function(el) {
+                        var elIdArr = el.id.split('_');
+                        var optionId = 0;
+                    	if (elIdArr[1]) optionId = elIdArr[1];
+                        
+                        var elValueArr = [];
+                        if (el.multiple) {
+                            for (i=0; i < el.options.length; i++) {
+                                if (el.options[i].selected) elValueArr.push(el.options[i].value);
+                            }
+                        } else {
+                            if (el.value) elValueArr.push(el.value);
+                        }
+                        elValueArr.each(function(valueId) {
+                            if ($('options_'+optionId+'_qty')) {
+                                var optionQty = parseInt($('options_'+optionId+'_qty').value);
+                            } else if ($('options_'+optionId+'_'+valueId+'_qty')) {
+                                var optionQty = parseInt($('options_'+optionId+'_' + valueId + '_qty').value);
+                            } else if ($('options_'+ optionId +'_text')) {
+                                var optionQty = $('options_'+ optionId +'_text').value.length;
+                            } else {
+                                var optionQty = 1;
+                            }
+                            totalQty += optionQty;
+                        }.bind(this));
+                    }.bind(this));
+                }
+                
+                
+                var restQty = limit - totalQty;
+                if ($('total_limit_' + optionId)) $('total_limit_' + optionId).innerHTML = limit - totalQty;
+                if (restQty<0 && changedEl) {
+                    if (parseInt(changedEl)>0) {
+                        // swatch uncheck
+                        optionSwatch.select(optionId, changedEl);
+                    } else if ($(changedEl).hasClassName('qty')) {
+                        var qty = parseInt(changedEl.value);
+                        qty = qty + restQty;
+                        if (qty<1) qty = 1;
+                        changedEl.value = qty;
+                        $(changedEl).onchange();
+                    } else if ($(changedEl).hasClassName('checkbox')) {
+                        $(changedEl).click();
+                    } else if ($(changedEl).hasClassName('input-text') || $(changedEl).hasClassName('text-area')) {
+                        // text
+                        changedEl.value = changedEl.value.substr(0, limit);
+                    }
+                    this.checkLimitQty(optionId, false);
+                }
+            }
+        };
+			
+			
+			var dependentMatrixOptions = {
+                dependentData: <?php echo $helper->getJsonDependentData($this->getOptions()) ?>,
+                inGroupIdData: <?php echo $helper->getJsonInGroupIdData($this->getOptions()) ?>,
+                defaultData: <?php echo $helper->getJsonDefaultData($this->getOptions()) ?>,
+                
+                dependentChanges: {"m":[], "d":[]},
+                dependentHide: <?php if ($helper->hideDependentOption()) echo 'true'; else echo 'false'; ?>,
+                select: function(el) {
+                    var i, ii = 0;                    
+                    if (el.type=='radio') {
+                        var radios = this.upDiv(el).getElementsByClassName('radio');
+                        for (i=0; i < radios.length; i++) {
+                            this.returnSelect(radios[i]);
+                        }                        
+                    } else {
+                        this.returnSelect(el);
+                    }
+                    
+                    if (el.type && el.type=='checkbox' && !el.checked) return false;
+                    if (el.disabled) return false;
+                    if (el.value>0) {
+                        // prepare value
+                        var elValueArr = [];
+                        if (el.multiple) {
+                            for (i=0; i < el.options.length; i++) {
+                                if (el.options[i].selected) elValueArr.push(el.options[i].value);
+                            }
+                        } else {
+                            elValueArr.push(el.value);
+                        }
+                        var mElementId = el.id;
+                        var dSelects = [];
+                        var isRequire = false;
+                        for (i=0; i < elValueArr.length; i++) {
+                            if (!this.dependentData[elValueArr[i]]) continue;
+                            this.dependentData[elValueArr[i]].each(function(IGI){
+                                if (this.inGroupIdData[IGI]) {                                    
+                                    for(var dElementId in this.inGroupIdData[IGI]) {
+                                        if (dElementId!='dependency' && dElementId!='out_of_stock' && dElementId!='view_mode' && $('matrix_'+dElementId)) {
+                                            if (this.inGroupIdData[IGI][dElementId]) {
+                                                var dElement = $('matrix_'+dElementId);
+                                                if (!this.dependentChanges['m'][mElementId]) this.dependentChanges['m'][mElementId] = [];
+                                                if (!this.dependentChanges['m'][mElementId][dElementId]) this.dependentChanges['m'][mElementId][dElementId] = [];
+                                                this.dependentChanges['m'][mElementId][dElementId]['disabled'] = true;
+                                                if (this.dependentChanges['m'][mElementId][dElementId]['is_require']) {
+                                                    isRequire = true;
+                                                } else {
+                                                    isRequire = $(dElement).hasClassName('required-dependent');
+                                                }
+                                                this.dependentChanges['m'][mElementId][dElementId]['is_require'] = isRequire;
+                                                
+                                                if (!this.dependentChanges['d'][dElementId]) this.dependentChanges['d'][dElementId] = [];
+                                            
+                                                if ((dElement.type=='select-one' || dElement.type=='select-multiple') && !$(dElement).hasClassName('datetime-picker')) {
+                                                    // if [multi]select
+                                                    var selectValue = 's'+this.inGroupIdData[IGI][dElementId];
+                                                    // if el not modified -> backup default options and clear
+                                                    if (!this.dependentChanges['d'][dElementId]['options']) {
+                                                        this.dependentChanges['d'][dElementId]['options'] = [];
+                                                        var opSelected = false;
+                                                        for (ii=0; ii < dElement.options.length; ii++) {
+                                                            if (this.defaultData[dElementId] && (this.defaultData[dElementId]==dElement.options[ii].value || this.defaultData[dElementId][dElement.options[ii].value])) opSelected = true; else opSelected = false;
+                                                            if (dElement.options[ii].value) this.dependentChanges['d'][dElementId]['options']['s'+dElement.options[ii].value] = {'text':dElement.options[ii].text, 'selected':opSelected, 'sel-def':opSelected, 'disabled':dElement.options[ii].disabled};
+                                                        }
+                                                        if (dElement.multiple) dElement.length = 0; else dElement.length = 1; // clear select
+                                                    }
+                                                    if (this.dependentChanges['d'][dElementId]['options'][selectValue]) {
+                                                        // set [multi]select flag use
+                                                        if (!this.dependentChanges['d'][dElementId]['options'][selectValue]['use']) this.dependentChanges['d'][dElementId]['options'][selectValue]['use'] = [];
+                                                        this.dependentChanges['d'][dElementId]['options'][selectValue]['use'].push(mElementId);
+                                                        this.dependentChanges['d'][dElementId]['options'][selectValue]['dependency'] = this.inGroupIdData[IGI].dependency;
+                                                        
+                                                        // commit changes
+                                                        if (!this.dependentChanges['m'][mElementId][dElementId]['options']) this.dependentChanges['m'][mElementId][dElementId]['options'] = [];
+                                                        this.dependentChanges['m'][mElementId][dElementId]['options'].push(selectValue);
+                                                    }
+                                                } else {
+                                                    // if radio, checkbox, text, etc.
+                                                    if (!this.dependentChanges['d'][dElementId]['use']) this.dependentChanges['d'][dElementId]['use'] = [];
+                                                    this.dependentChanges['d'][dElementId]['use'].push(mElementId);
+                                                    this.dependentChanges['d'][dElementId]['dependency'] = this.inGroupIdData[IGI].dependency;
+                                                }
+                                                
+                                                if ((this.dependentChanges['d'][dElementId]['use'] && this.dependentChanges['d'][dElementId]['use'].length >= this.inGroupIdData[IGI].dependency) || ((dElement.type=='select-one' || dElement.type=='select-multiple') && this.dependentChanges['d'][dElementId]['options'][selectValue] && this.dependentChanges['d'][dElementId]['options'][selectValue]['use'].length >= this.inGroupIdData[IGI].dependency)) {
+                                                    // set visibility
+                                                    if (!this.inGroupIdData[IGI].out_of_stock) dElement.disabled = false;
+                                                    if (this.dependentHide && this.inGroupIdData[IGI].view_mode!=2) {
+                                                        if (dElement.type=='checkbox' || dElement.type=='radio') {
+                                                            $(dElement).up('tr').style.display = 'inline-table';
+                                                        }
+                                                        dependentMatrixOptions.upDiv(dElement).style.display = 'inline-table';
+                                                    }
+                                                    // set class required-entry
+                                                    if (isRequire) {
+                                                        $(dElement).removeClassName('required-dependent');
+                                                        if (dElement.type=='checkbox' || dElement.type=='radio') {
+                                                            $(dElement).addClassName('validate-one-required-by-name');
+                                                        } else {
+                                                            $(dElement).addClassName('required-entry');
+                                                        }    
+                                                    }
+                                                    // add or init dependent element
+                                                    if ((dElement.type=='select-one' || dElement.type=='select-multiple') && !$(dElement).hasClassName('datetime-picker')) {
+                                                        // if [multi]select
+                                                        var selectValue = 's'+this.inGroupIdData[IGI][dElementId];
+                                                        if (this.dependentChanges['d'][dElementId]['options'][selectValue]) {
+                                                            dSelects.push(dElement); // after add data to this [multi]select
+                                                        }
+                                                    } else {
+                                                        // if radio, checkbox, text, etc.
+                                                        if (this.defaultData[dElementId] && ($(dElementId).type=='checkbox' || $(dElementId).type=='radio') && this.inGroupIdData[IGI].dependency==this.dependentChanges['d'][dElementId]['use'].length) $(dElementId).click();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }.bind(this));
+                        }
+						
+						if (dSelects.length>0) {
+                            for (i=0; i < dSelects.length; i++) {
+                                var dElement = dSelects[i];
+                                var dElementId = dElement.id;
+								// add data to [multi]select
+                                this.rememberNewSelected(dElement, dElementId);
+								dElementId = dElementId.replace('matrix_','');
+                                if (dElement.multiple) dElement.length = 0; else dElement.length = 1; // clear select                                
+                                for(var opValue in this.dependentChanges['d'][dElementId]['options']) {
+                                    if (!this.dependentChanges['d'][dElementId]['options'].hasOwnProperty(opValue) || !this.dependentChanges['d'][dElementId]['options'][opValue] || !this.dependentChanges['d'][dElementId]['options'][opValue]['use'] || this.dependentChanges['d'][dElementId]['options'][opValue]['use'].length==0) continue;
+                                    var newOpt = new Option(this.dependentChanges['d'][dElementId]['options'][opValue]['text'], opValue.substr(1));
+                                    newOpt.disabled = this.dependentChanges['d'][dElementId]['options'][opValue]['disabled'];
+                                    if (this.dependentChanges['d'][dElementId]['options'][opValue]['selected']) {
+                                        newOpt.selected = true;
+                                        //if (!newOpt.disabled) setTimeout('dependentMatrixOptions.select($("'+dElementId+'"));', '100');
+                                    }
+                                    dElement.options.add(newOpt);
+                                }
+                                dElement.onchange();
+                            }
+                        }
+                    }
+                },
+                // cancel changes and return default options params
+                returnSelect: function(el) {
+					var mElementId = el.id;
+					var i = 0;
+                    if (this.dependentChanges['m'][mElementId] && !this.dependentChanges['m'][mElementId]['is_used']) {
+                        this.dependentChanges['m'][mElementId]['is_used'] = true;
+                        for(var dElementId in this.dependentChanges['m'][mElementId]) {
+                            if (!this.dependentChanges['m'][mElementId].hasOwnProperty(dElementId) || dElementId=='is_used' || !$('matrix_'+dElementId)) continue;
+                            var dElement = $('matrix_'+dElementId);
+                            var disableElFlag = true;
+                            // disable dependent el
+                            if (this.dependentChanges['m'][mElementId][dElementId]['disabled']) {
+                                
+                                if (this.dependentChanges['m'][mElementId][dElementId]['options'] && this.dependentChanges['d'][dElementId]['options']) {
+                                    // to [multi]select                                    
+                                    this.rememberNewSelected(dElement, 'matrix_'+dElementId);
+                                    
+                                    // remove options if not use main el
+                                    for (i=0; i < this.dependentChanges['m'][mElementId][dElementId]['options'].length; i++) {
+                                        opValue = this.dependentChanges['m'][mElementId][dElementId]['options'][i];
+                                        
+                                        if (this.dependentChanges['d'][dElementId]['options'][opValue] && this.dependentChanges['d'][dElementId]['options'][opValue]['use'] && this.dependentChanges['d'][dElementId]['options'][opValue]['use'].length>0) {
+                                            this.dependentChanges['d'][dElementId]['options'][opValue]['use'] = this.dependentChanges['d'][dElementId]['options'][opValue]['use'].without(mElementId);
+                                            if (this.dependentChanges['d'][dElementId]['options'][opValue]['use'].length < this.dependentChanges['d'][dElementId]['options'][opValue]['dependency']) {
+                                                $$("#matrix_"+dElementId+" option[value='"+opValue.substr(1)+"']").each(function(elOp){
+                                                    <?php if ($helper->isTierPriceEnabled()) { ?>
+                                                        if (elOp.value && $('option_tier_prices_'+elOp.value)) {
+                                                            $('option_tier_prices_'+elOp.value).remove();
+                                                        }
+                                                    <?php } ?>
+                                                    elOp.remove();
+                                                });
+                                            } else {
+                                                disableElFlag = false;
+                                            }
+                                        }
+                                    }
+                                    if (disableElFlag && (dElement.length>1 || (dElement.multiple && dElement.length>0))) disableElFlag = false;
+                                    dElement.onchange();
+                                } else {                                    
+                                    // to radio, checkbox, text, etc.
+                                    if (this.dependentChanges['d'][dElementId]['use'] && this.dependentChanges['d'][dElementId]['use'].length > 0) {                                        
+                                        this.dependentChanges['d'][dElementId]['use'] = this.dependentChanges['d'][dElementId]['use'].without(mElementId);
+                                        if (this.dependentChanges['d'][dElementId]['use'].length >= this.dependentChanges['d'][dElementId]['dependency']) disableElFlag = false;
+                                    }
+                                }
+                                if (disableElFlag) {
+                                    dElement.disabled = true;
+                                    
+                                    // restore default if [multi]select
+                                    if ((dElement.type=='select-one' || dElement.type=='select-multiple') && !$(dElement).hasClassName('datetime-picker')) {
+                                        for(var opValue in this.dependentChanges['d'][dElementId]['options']) {
+                                            if (!this.dependentChanges['d'][dElementId]['options'].hasOwnProperty(opValue) || !this.dependentChanges['d'][dElementId]['options'][opValue]) continue;
+                                            var newOpt = new Option(this.dependentChanges['d'][dElementId]['options'][opValue]['text'], opValue.substr(1));
+                                            newOpt.disabled = this.dependentChanges['d'][dElementId]['options'][opValue]['disabled'];
+                                            newOpt.selected = this.dependentChanges['d'][dElementId]['options'][opValue]['sel-def'];
+                                            dElement.options.add(newOpt);
+                                        }
+                                        dElement.onchange();
+                                    }
+                                    
+                                    // hide
+                                    if (this.dependentHide) {
+                                        var hideDivFlag = true;
+                                        if (dElement.type=='checkbox' || dElement.type=='radio') {
+                                            $(dElement).up('tr').style.display = 'none';
+                                            ulEl = $(dElement).up('tr').up('ul');
+                                            if (ulEl) {
+                                                lis = ulEl.getElementsByTagName('tr');
+                                                for (i=0; i < lis.length; i++) {
+                                                    if (lis[i].style.display=='inline-table') {
+                                                        hideDivFlag = false;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        if (hideDivFlag) this.upDiv(dElement).style.display = 'none';
+                                    }
+                                    
+                                    // require
+                                    if (this.dependentChanges['m'][mElementId][dElementId]['is_require']) {
+                                        if (dElement.type=='checkbox' || dElement.type=='radio') {
+                                            $(dElement).removeClassName('validate-one-required-by-name');
+                                        } else {
+                                            $(dElement).removeClassName('required-entry');
+                                        }                                
+                                        $(dElement).addClassName('required-dependent');
+                                    }
+                                    
+                                    optionImages.showImage(dElement);
+                                }
+                            }
+                            // return dependent->dependent etc..
+                            if (disableElFlag && (dElement.type=='checkbox' || dElement.type=='radio') && dElement.checked) {
+                                dElement.checked = false;
+                                if (dElement.type=='checkbox') optionSetQtyProductMatrix.checkboxQty(dElement);
+                                dependentMatrixOptions.returnSelect(dElement);
+                            } else if ((dElement.type=='select-one' || dElement.type=='select-multiple') && !$(dElement).hasClassName('datetime-picker')) {
+                                dependentMatrixOptions.select(dElement); // that's right!
+                            } else if (disableElFlag && (dElement.type=='text' || dElement.type=='textarea' || dElement.type=='file')) {
+                                if (this.defaultData[dElementId]) dElement.value = this.defaultData[dElementId]; else dElement.value = '';
+                            }                            
+                        }
+                        delete this.dependentChanges['m'][mElementId];
+                    }    
+                },
+                rememberNewSelected: function(dElement, dElementId) {
+                    // remember new selected
+                    if (this.dependentChanges['d'][dElementId] && this.dependentChanges['d'][dElementId]['options']) {
+                        var opSelected = false;
+                        for (i=0; i < dElement.options.length; i++) {
+                            if (this.dependentChanges['d'][dElementId]['options']['s'+dElement.options[i].value]) {
+                                if (dElement.options[i].selected && dElement.options[i].value>0) opSelected = true; else opSelected = false;
+                                this.dependentChanges['d'][dElementId]['options']['s'+dElement.options[i].value]['selected'] = opSelected;
+                            }
+                        }
+                    }
+                },
+                // for ie to work
+                upDiv: function(el) {            
+                    if (el.type=='checkbox' || el.type=='radio') return el.up(4); else return el.up('table.product-matrix-option');                    
+                },
+                
+                applyDefaultValues: function(el) {            
+                    for(var elementId in this.defaultData) {
+                        if (!this.defaultData.hasOwnProperty(elementId)) continue;
+                        if ($(elementId) && this.upDiv($(elementId)) && this.upDiv($(elementId)).style.display!="none") {                    
+                            this.returnSelect($(elementId));
+                            if ($(elementId).type=='select-one' || $(elementId).type=='text' || $(elementId).type=='textarea') {
+                                $(elementId).value = this.defaultData[elementId];
+                            } else if ($(elementId).type=='select-multiple') {
+                                el = $(elementId);
+                                for (i=0; i < el.options.length; i++) {
+                                    if (this.defaultData[elementId][el.options[i].value]) el.options[i].selected = true;
+                                }
+                            } else if ($(elementId).type=='checkbox' || $(elementId).type=='radio') {
+                                if ($(elementId).checked!=true) $(elementId).click();
+                            }    
+                            this.select($(elementId));
+                        }
+                    }                     
+                }
+                
+            };
+    
+	Event.observe(window, 'load', function() {
+		optionMatrixImages.markProduct();
+        optionMatrixImages.pageLoaded = true;
+		
+		$$("select[id^='matrix_select_']").each(function(element){
+            element.onchange();
+        });
+		$$("input[id^='matrix_options_'].matrix-custom-option:checked").each(function(element) {
+            element.onclick();
+        });
+		dependentMatrixOptions.applyDefaultValues();       
+	});
+	
+	<?php } ?>
+	<?php endif; ?>		
+    //]]>
+    </script>
+<?php endif; ?>

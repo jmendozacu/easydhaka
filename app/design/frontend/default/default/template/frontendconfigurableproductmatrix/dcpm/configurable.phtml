@@ -1,0 +1,369 @@
+<?php
+if($this->getRequest()->getModuleName() == 'checkout') return '';
+$_product    = $this->getProduct();
+$_attributes = (array)$_product->getTypeInstance(true)->getConfigurableAttributes($_product)->getData();
+$_matrixHelper = $this->getMatrixHelper();
+?>
+<?php if(count($_attributes) == 2 && $_matrixHelper->isEnable($_product) && $_matrixHelper->isSecondMatrix($_product) == 1):?>
+<?php 
+	$_newAttribute = $_attributes;
+	$_satchAttribute = array_pop($_newAttribute);
+	$_isSwatch = $_matrixHelper->isReplacedWithSwatchs($_satchAttribute['attribute_id']);
+	$_isShowStock = $_matrixHelper->isShowStock($_product);
+	$_mTemplate = $_matrixHelper->getMatrixTemplate($_product);
+	$_mPosition = $_matrixHelper->getSecondMatrixPosition($_product);
+	$arrSimpleData = $this->getAllChildProducts();
+	$_isLinked = $_matrixHelper->isShowLink($_product);
+	$_showTotle = $_matrixHelper->isShowGrandTotal($_product);
+	$_isCptp = $_matrixHelper->isCptpEnable();
+	$_swatch_code = Mage::getModel('eav/entity_attribute')->load($_satchAttribute['attribute_id'])->getAttributeCode();
+?>
+<?php if($_isLinked):?><h2><?php echo $this->__('Product Matrix') ?></h2><button type="button" class="button popupHide" onclick="matrixBlockUI();"><span><span><?php echo $this->__('Product Order Matrix') ?></span></span></button><?php endif;?>
+<script type="text/javascript">
+	var arrSimpleData = <?php echo json_encode($arrSimpleData);?>;
+	Product.Config.prototype.configureForValues  = Product.Config.prototype.configureForValues.wrap(
+		function(parentMethod){
+			var lastMatrix = this.settings.last(), html = '', LID = 'matrix_'+lastMatrix.id;
+			lastMatrix.hide().removeClassName('required-entry');
+			lastMatrix.up('dd').previous('dt').hide();
+			<?php if($_mPosition == 4):?>
+			lastMatrix.up('dl').setAttribute('id','second-split-dl');
+			<?php endif;?>
+			<?php if($_isSwatch):?>
+			lastMatrix.up('.input-box').next('div').hide();
+			<?php endif;?>
+			<?php if($_mTemplate == 1):?>
+			html = '<table id="'+LID+'" class="data-table one-matrix-table"></table>';
+			<?php else:?>
+			html = '<table id="'+LID+'" class="data-table one-matrix-table"><thead><tr>'+
+				<?php if($this->_showImage == 1):?>
+				'<th><?php echo $this->__('Image');?></th>'+
+				<?php endif;?>
+				'<th>'+lastMatrix.up('dd').previous('dt').down('label').innerHTML+'</th>'+
+				'<th class="a-right"><?php echo $this->__('Price');?></th>'+
+				<?php if($_isShowStock == 1):?>
+				'<th class="a-right"><?php echo $this->__('Stock');?></th>'+
+				<?php endif;?>
+				'<th><?php echo $this->__('Qty');?></th></tr>'+
+				'</thead><tfoot><tr>'+
+				<?php if($this->_showImage == 1):?>
+				'<th>&nbsp;</th>'+
+				<?php endif;?>
+				'<th>&nbsp;</th>'+
+				<?php if($_showTotle==1):?>
+				'<th id="oneMatrixTotal" class="a-right">'+this.formatPrice(0)+'</th>'+
+				<?php else:?>
+				'<th>&nbsp;</th>'+
+				<?php endif;?>
+				<?php if($_isShowStock == 1):?>
+				'<th>&nbsp;</th>'+
+				<?php endif;?>
+				'<th id="oneMatrixQty">0</th></tr></tfoot><tbody></tbody></table>';
+			<?php endif;?>
+			
+			if(!lastMatrix.next('#'+LID)) {
+				lastMatrix.insert({after: html});
+				decorateTable(LID);
+				$(LID).hide();
+				if($('product_addtocart_form')) $('product_addtocart_form').action = '<?php echo $this->getSubmitUrl($_product) ?>';
+			}
+			$$('.btn-cart').each(function(button){
+				button.disabled = false;
+			});
+			<?php if($_isLinked):?>jQuery('#product-options-wrapper dl').wrapAll('<div class="both-dl" />');<?php endif;?>
+			return parentMethod();
+		}
+	);
+	
+	Product.Config.prototype.configureElement  = Product.Config.prototype.configureElement.wrap(
+		function(parentMethod,element) {
+			if(!element.value){
+				this.settings.last().next('table.one-matrix-table').down('tbody').update('');
+				this.settings.last().next('table.one-matrix-table').hide();
+			}
+			return parentMethod(element);
+		}
+	);	
+	
+	Product.Config.prototype.fillSelect  = Product.Config.prototype.fillSelect.wrap(
+		function(parentMethod,element){
+			var attributeId = element.id.replace(/[a-z]*/, '');
+			var html = '', useLast = (element.id==this.settings.last().id), FID = 'matrix_'+element.id;
+			var options = this.getAttributeOptions(attributeId);
+			this.clearSelect(element);
+			element.options[0] = new Option('', '');
+			element.options[0].innerHTML = this.config.chooseText;
+	
+			var prevConfig = false;
+			if(element.prevSetting){
+				prevConfig = element.prevSetting.options[element.prevSetting.selectedIndex];
+			}
+	
+			if(options) {
+				var index = 1;
+				var thead = tfoot = tbody = t2Img = '';
+				for(var i=0;i<options.length;i++){
+					var allowedProducts = [];
+					if(prevConfig) {
+						for(var j=0;j<options[i].products.length;j++){
+							if(prevConfig.config.allowedProducts
+								&& prevConfig.config.allowedProducts.indexOf(options[i].products[j])>-1){
+								allowedProducts.push(options[i].products[j]);
+							}
+						}
+					} else {
+						allowedProducts = options[i].products.clone();
+					}
+	
+					if(allowedProducts.size()>0){
+						options[i].allowedProducts = allowedProducts;
+						element.options[index] = new Option(this.getOptionLabel(options[i], options[i].price), options[i].id);
+						if (typeof options[i].price != 'undefined') {
+							element.options[index].setAttribute('price', options[i].price);
+						}
+						if(options[i].allowedProducts.length == 1){
+							<?php if($_mTemplate == 1):?>
+							if(arrSimpleData[parseInt(options[i].allowedProducts[0])]){
+								thead += '<th class="a-center"><strong>'+<?php if($_isSwatch):?>arrSimpleData[parseInt(options[i].allowedProducts[0])]['<?php echo $_swatch_code;?>']<?php else:?>options[i].label<?php endif;?>+'</strong>';
+								<?php foreach($_newAttribute as $attr):?>
+								thead += '<input type="hidden" name="product_matrix['+parseInt(options[i].allowedProducts[0])+'][super_attribute][<?php echo $attr['attribute_id'];?>]" value="'+$('attribute<?php echo $attr['attribute_id'];?>').value+'" />';
+								<?php endforeach;?>
+								thead += '<input type="hidden" name="product_matrix['+parseInt(options[i].allowedProducts[0])+'][super_attribute]['+attributeId+']" value="'+options[i].id+'" />';
+								<?php if($this->isSimple()):?>
+								thead += '<input type="hidden" name="product_matrix['+parseInt(options[i].allowedProducts[0])+'][customprice]" value="'+arrSimpleData[parseInt(options[i].allowedProducts[0])]['exTaxPrice']+'" />';
+								<?php endif;?>
+								<?php if(Mage::getStoreConfig('cpbu/basic_options/update_fields',Mage::app()->getStore()) != ''):?>
+									thead += '<input type="hidden" name="product_matrix['+parseInt(options[i].allowedProducts[0])+'][customname]" value="'+arrSimpleData[parseInt(options[i].allowedProducts[0])]['name']+'" /><input type="hidden" name="product_matrix['+parseInt(options[i].allowedProducts[0])+'][customthumb]" value="'+arrSimpleData[parseInt(options[i].allowedProducts[0])]['thumb']+'" />';
+								<?php endif;?>
+								thead += '</th>';
+								
+								<?php if($_matrixHelper->isOnlyCheckBox($_product)):?>
+                                	tbody += '<td class="a-center"><input id="'+parseInt(options[i].allowedProducts[0])+'" class="input-text qty" type="checkbox" value="1" title="Qty" name="product_matrix[qty]['+parseInt(options[i].allowedProducts[0])+']" onclick="spConfig.calcTotalMatrixCheck();" /></td>';
+                            	<?php else:?>
+									tbody += '<td><input id="'+parseInt(options[i].allowedProducts[0])+'" class="input-text qty" type="text" value="0" title="Qty" maxlength="12" name="product_matrix[qty]['+parseInt(options[i].allowedProducts[0])+']" onkeyup="spConfig.calcTotalMatrix();" />';
+									tbody += '<div><strong><?php echo $this->__('Price: ');?></strong><span id="tier-price-'+parseInt(options[i].allowedProducts[0])+'">'+this.formateAndCalcPrice(options[i].price,arrSimpleData[parseInt(options[i].allowedProducts[0])])+'</span></div>';
+									<?php if($_isShowStock == 1):?>
+									tbody += '<div><strong><?php echo $this->__('Stock: ');?></strong>'+arrSimpleData[parseInt(options[i].allowedProducts[0])]['stock']+'</div></td>';
+									<?php endif;?>
+								<?php endif;?>
+								
+								tfoot += '<th>&nbsp;</th>';
+								
+								if(t2Img == '' && arrSimpleData[parseInt(options[i].allowedProducts[0])]['has_img'] == 1)
+									t2Img = arrSimpleData[parseInt(options[i].allowedProducts[0])]['image'];
+								
+							}
+							<?php else:?>
+							html += '<tr>';
+							if(arrSimpleData[parseInt(options[i].allowedProducts[0])]){
+								<?php if($this->_showImage == 1):?>
+								html += '<td class="a-center">'+arrSimpleData[parseInt(options[i].allowedProducts[0])]['image']+'</td>';
+								<?php endif;?>
+								<?php if($_isSwatch):?>
+								html += '<td class="a-center">'+arrSimpleData[parseInt(options[i].allowedProducts[0])]['<?php echo $_swatch_code;?>'];
+								<?php else:?>
+								html += '<td class="a-center"><strong>'+options[i].label+'</strong>';
+								<?php endif;?>
+								<?php foreach($_newAttribute as $attr):?>
+								html += '<input type="hidden" name="product_matrix['+parseInt(options[i].allowedProducts[0])+'][super_attribute][<?php echo $attr['attribute_id'];?>]" value="'+$('attribute<?php echo $attr['attribute_id'];?>').value+'" />';
+								<?php endforeach;?>
+								html += '<input type="hidden" name="product_matrix['+parseInt(options[i].allowedProducts[0])+'][super_attribute]['+attributeId+']" value="'+options[i].id+'" />';
+								<?php if($this->isSimple()):?>
+								html += '<input type="hidden" name="product_matrix['+parseInt(options[i].allowedProducts[0])+'][customprice]" value="'+arrSimpleData[parseInt(options[i].allowedProducts[0])]['exTaxPrice']+'" />';
+								<?php endif;?>
+								<?php if(Mage::getStoreConfig('cpbu/basic_options/update_fields',Mage::app()->getStore()) != ''):?>
+									html += '<input type="hidden" name="product_matrix['+parseInt(options[i].allowedProducts[0])+'][customname]" value="'+arrSimpleData[parseInt(options[i].allowedProducts[0])]['name']+'" /><input type="hidden" name="product_matrix['+parseInt(options[i].allowedProducts[0])+'][customthumb]" value="'+arrSimpleData[parseInt(options[i].allowedProducts[0])]['thumb']+'" />';
+								<?php endif;?>
+								html += '</td><td id="tier-price-'+parseInt(options[i].allowedProducts[0])+'" class="a-right">'+this.formateAndCalcPrice(options[i].price,arrSimpleData[parseInt(options[i].allowedProducts[0])])+'</td>';
+								<?php if($_isShowStock == 1):?>
+								html += '<td class="a-right">'+arrSimpleData[parseInt(options[i].allowedProducts[0])]['stock']+'</td>';
+								<?php endif;?>
+								
+								<?php if($_matrixHelper->isOnlyCheckBox($_product)):?>
+                                	html += '<td><input id="'+parseInt(options[i].allowedProducts[0])+'" class="input-text qty" type="checkbox" value="1" title="Qty" name="product_matrix[qty]['+parseInt(options[i].allowedProducts[0])+']" onclick="spConfig.calcTotalMatrixCheck();" /></td>';
+                            	<?php else:?>
+									html += '<td><input id="'+parseInt(options[i].allowedProducts[0])+'" class="input-text qty" type="text" value="0" title="Qty" maxlength="12" name="product_matrix[qty]['+parseInt(options[i].allowedProducts[0])+']" onkeyup="spConfig.calcTotalMatrix();" /></td>';
+								<?php endif;?>
+							}
+							html += '</tr>';
+							<?php endif;?>
+						}
+						element.options[index].config = options[i];
+						index++;
+					}
+				}
+				if(useLast){
+					<?php if($_mTemplate == 1):?>
+						html = '<thead><tr><th class="a-center">'+this.settings.last().up('dd').previous('dt').down('label').innerHTML+'</th>'+thead+'<th><?php echo $this->__('Qty');?></th>';
+						<?php if($_showTotle == 1):?>
+						html += '<th><?php echo $this->__('Total');?></th>';
+						<?php endif;?>
+						html += '</tr></thead><tbody><tr><td class="a-center"><?php if($this->_showImage == 1):?>'+t2Img+'<?php endif;?></td>'+tbody+'</td><td id="oneMatrixQty">0</td>';
+						<?php if($_showTotle == 1):?>
+						html += '<td id="oneMatrixTotal" class="a-left">'+this.formatPrice(0)+'</td>';
+						<?php endif;?>
+						html += '</tr></tbody><tfoot><tr><td></td>'+tfoot+'<td></td><?php if($_showTotle == 1):?><td></td><?php endif;?></tr></tfoot>';
+					$(FID).update(html);	
+					<?php else:?>
+					$(FID).down('tbody').update(html);
+					<?php endif;?>
+					decorateTable(FID);
+					$(FID).show()
+				}
+			}
+		}
+	)
+	
+	Product.Config.addMethods({
+		formateAndCalcPrice: function(price,simplePrd){
+			<?php if($this->isSimple() == true):?>
+			var price = parseFloat(simplePrd['price']);
+			<?php else:?>
+			var orgPrice = parseFloat('<?php echo Mage::helper('tax')->getPrice($_product,$_product->getFinalPrice());?>');
+			var price = parseFloat(price);
+			if (this.taxConfig.includeTax) {
+				var tax = price / (100 + this.taxConfig.defaultTax) * this.taxConfig.defaultTax;
+				var excl = price - tax;
+				var incl = excl*(1+(this.taxConfig.currentTax/100));
+			} else {
+				var tax = price * (this.taxConfig.currentTax / 100);
+				var excl = price;
+				var incl = excl + tax;
+			}
+
+			if (this.taxConfig.showIncludeTax || this.taxConfig.showBothPrices) {
+				price = incl;
+			} else {
+				price = excl;
+			}
+			price += orgPrice;
+			<?php endif;?>
+			return this.formatPrice(price);
+		},
+		
+		calcTotalMatrix: function(){
+			var MQTY = MTTL = 0;
+			var thisObj = this;
+			$$('.one-matrix-table input.qty').each(function(item){
+				var pid  = item.id, itemValue = (1*item.value);
+				<?php if($_isCptp):?>
+				var mttl = (thisObj.returnPriceOrTier(pid,arrSimpleData[pid],itemValue));
+				if(itemValue != 0) MTTL += mttl;
+				<?php else:?>
+				if(itemValue == 0) return true;
+				MTTL += (thisObj.returnPriceOrTier(pid,arrSimpleData[pid],itemValue));
+				<?php endif;?>
+				MQTY += itemValue;
+			});
+			$('oneMatrixQty').update(MQTY);
+			if($('oneMatrixTotal')) $('oneMatrixTotal').update(this.formatPrice(MTTL));
+		},
+		
+		calcTotalMatrixCheck: function(){
+			var MQTY = MTTL = 0;
+			var thisObj = this;
+			$$('.one-matrix-table input.qty').each(function(item){
+				var pid  = item.id, itemValue = (1*item.value);
+				<?php if($_isCptp):?>
+				var mttl = (thisObj.returnPriceOrTier(pid,arrSimpleData[pid],itemValue));
+				if(item.checked) {
+					MTTL += mttl;
+					MQTY += itemValue;
+				}
+				<?php else:?>
+				if(!item.checked) return true;
+				MTTL += (thisObj.returnPriceOrTier(pid,arrSimpleData[pid],itemValue));
+				MQTY += itemValue;
+				<?php endif;?>
+			});
+			$('oneMatrixQty').update(MQTY);
+			if($('oneMatrixTotal')) $('oneMatrixTotal').update(this.formatPrice(MTTL));
+		},
+		
+		returnPriceOrTier: function(pid, product, qty){
+            var unitPriceTier = product.price, currentPriceTier;
+            var tierPriceMatrix = product.tier;
+            var tirQty = product.tier_qty, formatedQty = qty;
+			<?php if($_isCptp):?>
+			formatedQty = calcTotalQtyOneMatrix();
+			<?php endif;?>
+            
+            if(product.tier_qty.length > 0){
+                tirQty = tirQty.sort(function(a, b){return b-a});
+                for(var i=0;i<tirQty.length;i++)
+                {
+                    if(formatedQty >= tirQty[i]){
+                        unitPriceTier = tierPriceMatrix[tirQty[i]];
+                        currentPriceTier = unitPriceTier*qty;
+                        break;	
+                    }
+                }
+            }
+            currentPriceTier = unitPriceTier*qty;
+            if($('tier-price-'+pid)) $('tier-price-'+pid).update(optionsPrice.formatPrice(unitPriceTier));
+            return currentPriceTier;
+        }
+	});
+	
+	calcTotalQtyOneMatrix = function(){
+		var ttlQ = 0;
+		$$('.one-matrix-table .qty').each(function(item){
+			if(item.type == 'checkbox') {
+				if(item.checked) ttlQ += (1*item.value);
+			} else {
+				ttlQ += (1*item.value);
+			}
+		});
+		return ttlQ;
+	}
+	
+	replaceSimpleMediaImages = function(direction){
+		var pid = direction.split('_');
+		pid = pid[0];
+		if(arrSimpleData[pid]){
+			if(arrSimpleData[pid]['has_img'] == 1 && arrSimpleData[pid]['media']){
+				$$('.product-img-box')[0].update(arrSimpleData[pid]['media']);
+				setTimeout(function() { 
+				<?php if(version_compare(Mage::getVersion(), '1.9.0.1', '<')===true):?>
+					product_zoom = new Product.Zoom('image', 'track', 'handle', 'zoom_in', 'zoom_out', 'track_hint');
+				<?php else:?>
+					ProductMediaManager.init();
+				<?php endif;?>
+				}, 1000);
+			}
+		}
+	}
+	
+	<?php if($_isLinked):?>	
+    matrixBlockUI = function() {
+		jQuery.blockUI({ message: jQuery('#product-options-wrapper > .both-dl'), css : {padding: '10px', width: 'auto', cursor: 'default', top: '5%', textAlign: 'left' }, overlayCSS: {cursor: 'pointer'} });
+		jQuery('.blockOverlay').prop('title','Click to Close.').click(jQuery.unblockUI); 
+		setTimeout(function(){
+			jQuery('.blockMsg > .both-dl')
+				.wrap('<div id="product-options-wrapper-popup" class="product-options" style="position:relative;margin: 0;"></div>')
+				.before('<h2><?php echo $this->__('Product Matrix') ?></h2><img style="position:absolute;top:-27px;right:-27px;cursor:pointer;" onclick="jQuery.unblockUI();" src="<?php echo $this->getJsUrl('fcpm/close.png');?>">')
+				.after('<br/><button id="allBtnCart" class="button btn-cart right" title="<?php echo $this->__('Add to Cart');?>" type="button"><span><span><?php echo $this->__('Add to Cart');?></span></span></button><div class="clearer"></div>');
+			jQuery('.blockMsg').css('left',(jQuery(window).width()-(jQuery('.blockMsg dl').outerWidth()>400?jQuery('.blockMsg dl').outerWidth():400)) /2 + 'px');
+			jQuery('#allBtnCart').click( function() {
+				jQuery.unblockUI();
+				setTimeout(function() { 
+					var objCart = jQuery('.add-to-cart .btn-cart');
+					productAddToCartForm.submit(objCart[0]);
+				},500);			
+			});
+		},200);
+	}
+	<?php endif;?>
+</script>
+<style type="text/css">
+.product-options-bottom .price-box,.product-options-bottom .add-to-cart label,.product-options-bottom .add-to-cart #qty<?php if($_isLinked):?>,.product-essential #product-options-wrapper dl,.blockMsg .popupHide, .product-options-bottom .add-to-cart .btn-cart<?php endif;?>{display:none;}
+<?php if($_mPosition == 4):?>
+#second-split-dl dt{float: left; width: 44%;}
+#second-split-dl dd{border: medium none; float:left; clear:left; width:40%;}
+#second-split-dl dd.last{float: right; width: 50%; clear:none;}
+#second-split-dl+.float-clearer{border-bottom: 1px solid #e4e4e4;}
+#second-split-dl:after{clear:both;display:block;content:"";}
+<?php if($_isLinked):?>#product-options-wrapper-popup #second-split-dl{width:520px;}<?php endif;?>
+<?php endif;?>
+</style>
+<?php endif;?>

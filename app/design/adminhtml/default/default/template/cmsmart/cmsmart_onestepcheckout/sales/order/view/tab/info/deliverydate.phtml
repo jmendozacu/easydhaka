@@ -1,0 +1,21 @@
+<?php 
+	$deliverydateData = $this->_getDeliverydateData($this->_getOrderId())
+?>
+<?php
+
+ ?>
+<div class="box-right">
+	<div class="entry-edit">
+		<div class="entry-edit-head">
+			<h4 class="icon-head head-shipping-method"><?php echo $this->helper('onestepcheckout')->__('Delivery Date') ?></h4>
+		</div>
+		<fieldset>
+		<?php if($deliverydateData->getDeliverydateDate()!=""):?>
+		<?php echo $this->__('Delivery Date:')?><span style="font-weight:bold;"> <?php echo $deliverydateData->getDeliverydateDate(); ?></span>
+		<?php else: ?>
+		<?php echo $this->__('Delivery Time:')?><span style="font-weight:bold;"> <?php echo $this->__('As soon as possible')?></span>
+		<?php endif; ?>
+		</fieldset>
+	</div>
+</div>
+<?php

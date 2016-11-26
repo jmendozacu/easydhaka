@@ -1,0 +1,76 @@
+<link rel="stylesheet" type="text/css" href="<?php echo Mage::getBaseUrl('js')?>htz/vendor.css" />
+<script type="text/javascript" src="<?php echo Mage::getBaseUrl('js')?>htz/jquery.min.js"></script>
+<script type="text/javascript" src="<?php echo Mage::getBaseUrl('js')?>htz/vendor.js"></script>
+<div class="entry-edit">
+    <div class="entry-edit-head">
+        <h4 class="icon-head head-edit-form fieldset-legend"><?php echo Mage::helper('vendor')->__('User Stores') ?></h4>
+    </div>    
+</div>
+<input type="hidden" value="<?php echo Mage::getBaseUrl('js')?>htz/" id="htz_file_path">
+<?php
+	$userId 		= Mage::app()->getRequest()->getParam('user_id');
+	$userStoreIds 	= array();
+	if($userId){
+		$storeIds 	= Mage::getModel('admin/user')->load($userId)->getStoreIds();
+		if($storeIds){$userStoreIds = explode(',', $storeIds);}
+	}
+?>
+<div class="user_store_list">
+	<fieldset>
+		<table width="100%">
+			<tr>
+				<td width="50%">
+				<?php $webCollection = Mage::getModel('core/website')->getCollection()?>
+				<?php foreach($webCollection as $website): ?>				
+					<p class="web"><?php echo $website->getName() ?></p>
+					<?php $groups = Mage::getModel('core/store_group')->getCollection()->addWebsiteFilter($website->getId())?>
+					<?php foreach($groups as $group): ?>					
+						<p class="grp"><?php echo $group->getName() ?></p>
+						<?php $stores = Mage::getModel('core/store')->getCollection()->addGroupFilter($group->getId())?>
+						<?php foreach($stores as $store): ?>						
+							<?php if(in_array($store->getId(),$userStoreIds)): ?>
+								<p class="str active">
+									<img src="<?php echo Mage::getBaseUrl('js')?>htz/active.png">
+									<input style="display:none;" checked="checked" value="<?php echo $store->getId() ?>" type="checkbox" name="stores[]" />	
+							<?php else: ?>
+								<p class="str">
+									<img src="<?php echo Mage::getBaseUrl('js')?>htz/inactive.png"> 
+									<input style="display:none;" value="<?php echo $store->getId() ?>" type="checkbox" name="stores[]" />	
+							<?php endif; ?>						
+								&nbsp;<?php echo $store->getName() ?>
+							</p>
+						<?php endforeach; ?>
+					<?php endforeach; ?>
+					<br><br>	
+				<?php endforeach; ?>
+				<input type="hidden" class="input-text <?php if(count($userStoreIds)==0):?>required-entry<?php endif;?>" id="htz_store_flag">			
+				</td>
+				<td width="40%">
+					<table>
+						<tr>
+							<td>
+								<div class="note"><?php echo $this->__('Store can be checked/unchecked by click on store button.')?></div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="user_website"></div><span class="user_label w"><?php echo $this->__('Website')?></span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="user_group"></div><span class="user_label g"><?php echo $this->__('Group')?></span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="user_store"></div><span class="user_label s"><?php echo $this->__('Store')?></span>
+							</td>
+						</tr>					
+					</table>
+				</td>
+			</tr>
+		</table>
+		
+	</fieldset>
+</div>

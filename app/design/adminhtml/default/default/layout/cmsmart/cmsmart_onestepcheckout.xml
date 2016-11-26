@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<layout>
+	<!-- <adminhtml_sales_order_view>
+		<reference name="order_tab_info">
+			<action method="setTemplate"><template>cmsmart/cmsmart_onestepcheckout/sales/order/view/tab/info.phtml</template></action> 
+			<block type="onestepcheckout/adminhtml_onestepcheckout_sales_order_view_tab_info_deliverydate" name="deliverydate" template="cmsmart/cmsmart_onestepcheckout/sales/order/view/tab/info/deliverydate.phtml"></block>
+		</reference>
+	</adminhtml_sales_order_view> -->
+</layout>
